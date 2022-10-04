@@ -1,5 +1,4 @@
 <<<<<<< HEAD
----no
 =======
 ---
 >>>>>>> 6a7494cfbee89f41e04802e23215d11b0c62885d
@@ -197,6 +196,13 @@ if(!require(readxl)){
   library(readxl)
 }
 
+
+if(!require(write_xlsx)){
+  install.packages("write_xlsx")
+  library(write_xlsx)
+}
+
+
 #Package: reghelper
 if(!require(reghelper)){
   install.packages("reghelper")
@@ -288,45 +294,7 @@ apatheme=theme_bw()+
 
 <<<<<<< HEAD
 =======
-#prolificdemog
 
-```{r}
-
-#Read in Prolific Demographics 
-
-ProlificDemog <- read.csv("/Users/sarahreichman/Desktop/Thesis/ProlificDemog.csv", stringsAsFactors=FALSE)
-
-#Select ID variable and Country
-ProlificDemog <- ProlificDemog %>%
-  select(Participant.id, Country.of.residence) %>% rename(prolific_id = Participant.id)
-
-#Combine your main qualtrics dataset with the prolific demogs
-country.df <- merge(trialdata1, ProlificDemog, by = "prolific_id")
-
-#counts of country variables
-summary(factor(country.df$Country.of.residence)) 
- 
-
-#total =529
-#canada
-(13/529)*100
-
-#ireland
-(2/529)*100
-
-#south africa
-(90/529)*100
-
-#uk
-(223/529)*100
-
-#us
-(201/529)*100
- 
-
-
-#missing 10 people lowkey...
-```
 >>>>>>> 6a7494cfbee89f41e04802e23215d11b0c62885d
 
 
@@ -417,9 +385,6 @@ summary(factor(country.df$Country.of.residence))
 
 #missing 10 people lowkey...
 ```
-=======
-write.csv(trialdata1,"../experiments/trialcleandata.csv")
-```
 
 >>>>>>> 6a7494cfbee89f41e04802e23215d11b0c62885d
 
@@ -481,6 +446,9 @@ trialdata_high <-subset(trialdata1, status == "high")  %>% discard(~all(is.na(.)
 write_xlsx(trialdata_low,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_low.xlsx")
 write_xlsx(trialdata_control,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_control.xlsx")
 write_xlsx(trialdata_high,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_high.xlsx")
+
+#its uploaded as FullQualtricsAlignedMCQ.xlsx
+
 
 # 
 # jointdataset <- bind_rows(trialdata_low, trialdata_control, trialdata_high)
@@ -565,19 +533,11 @@ write_xlsx(trialdata_high,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_tria
 ```{r}
 
 #devtools::install_github("ropenscilabs/gendercoder")
-<<<<<<< HEAD
 # library(gendercoder)
 # gender <- trialdata1 %>% tibble(gender = c("male", "MALE", "mle", "I am male", "femail", "female", "enby")) %>%
 #   mutate(manylevels_gender  = recode_gender(gender, dictionary = manylevels_en, retain_unmatched = TRUE),
 #          fewlevels_gender = recode_gender(gender, dictionary = fewlevels_en, retain_unmatched = FALSE)
 #   )
-=======
-library(gendercoder)
-gender <- trialdata1 %>% tibble(gender = c("male", "MALE", "mle", "I am male", "femail", "female", "enby")) %>%
-  mutate(manylevels_gender  = recode_gender(gender, dictionary = manylevels_en, retain_unmatched = TRUE),
-         fewlevels_gender = recode_gender(gender, dictionary = fewlevels_en, retain_unmatched = FALSE)
-  )
->>>>>>> 6a7494cfbee89f41e04802e23215d11b0c62885d
 
 
 summary(factor(trialdata1$gender)) 
@@ -603,12 +563,10 @@ summary(factor(trialdata1$gender))
 
 #age
 ```{r}
-
-<<<<<<< HEAD
+ 
 
 #adding 13 bc of how it was recorded in qualtrics
-=======
->>>>>>> 6a7494cfbee89f41e04802e23215d11b0c62885d
+
 min((as.numeric(trialdata1$age))) + 13
 max((as.numeric(trialdata1$age))) + 13
 
@@ -749,7 +707,7 @@ HS_exclusions.df <- filter(chatHS_wide, HS_chattext.df$text == "Let’s stop thr
 
 
 #making the throws 'lead' and removing every second row called "player catch"
-#new column called catch
+#new column called catch. catch is who they threw to
 ballHS_wide$catch <- lead(ballHS_wide$player)
 HS_ballhigh.df <- subset(ballHS_wide, HS_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, HS_ballseconds)) 
 
@@ -840,8 +798,6 @@ HS_p1_exclusion_pivot <- pivot_longer(
 
 #merging proportion with context and status variables from qualtrics
 HS_p1_exclusion_full <- merge(x=HS_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
-
-
 
 
 ```
@@ -2631,18 +2587,32 @@ LT_p4_exclusion_full <- merge(x=LT_p4_exclusion_pivot, y=trialdata1, by = "proli
 
 ```
 
-#dummy coding
+
+#big dataset!!
 
 
 ```{r}
 
+##player 1 =excluder
+#player 2 =victim 
+#player 3 = bystander
 
 #excluder proportions across conditions
-excluder_all.df<- rbind(HS_p1_exclusion_full, HT_p1_exclusion_full, MS_p3_exclusion_full, MT_p3_exclusion_full, LS_p4_exclusion_full, LT_p4_exclusion_full)
+excluder_all.df<- rbind(HS_p1_exclusion_full, HT_p1_exclusion_full, MS_p3_exclusion_full, MT_p3_exclusion_full, LS_p4_exclusion_full, LT_p4_exclusion_full)%>% mutate(player=1)
+
 
 #victim proportions across conditions
-victim_all.df<- rbind(HS_p3_exclusion_full, HT_p3_exclusion_full, MS_p4_exclusion_full, MT_p4_exclusion_full, LS_p3_exclusion_full, LT_p3_exclusion_full)
+victim_all.df<- rbind(HS_p3_exclusion_full, HT_p3_exclusion_full, MS_p4_exclusion_full, MT_p4_exclusion_full, LS_p3_exclusion_full, LT_p3_exclusion_full) %>% mutate(player=2)
 
+#bystanderproportions across conditions
+
+bystander_all.df<- rbind(HS_p4_exclusion_full, HT_p4_exclusion_full, MS_p1_exclusion_full, MT_p1_exclusion_full, LS_p1_exclusion_full, LT_p1_exclusion_full)%>% mutate(player=3)
+
+```
+
+#dummy coding dataset
+
+```{r}
 # need to create numeric codes. Level 1 predictor must be numeric or the model can't estimate its fixed effect properly
 
 #     x1status = +1 HS, 0 C, -1 LS
@@ -2698,17 +2668,46 @@ victim_all.df$x2status <- as.numeric(victim_all.df$x2status)
 excluder_all.df$x3context<- as.numeric(excluder_all.df$x3context)
 victim_all.df$x3context <- as.numeric(victim_all.df$x3context)
 
+
+#ADDING DUMMY TO BYSTANDER
+bystander_all.df <- mutate(bystander_all.df, x1status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "-1", "0")))
+
+
+bystander_all.df <- mutate(bystander_all.df, x2status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "1", "-2")))
+
+bystander_all.df <- mutate(bystander_all.df, x3context =
+              ifelse(context == "task", "1", "-1"))
+
+bystander_all.df <- mutate(bystander_all.df, xtime =
+              ifelse(time == "post", "1", "-1"))
+
+bystander_all.df$xtime <- as.numeric(bystander_all.df$xtime)
+
+bystander_all.df$x1status <- as.numeric(bystander_all.df$x1status)
+
+bystander_all.df$x2status <- as.numeric(bystander_all.df$x2status)
+
+bystander_all.df$x3context<- as.numeric(bystander_all.df$x3context)
+
+
+#this contains the counts of throws participant throws to p1 (excluder) pre exc msg
+HS_player1pre
+
+
+excluder_all.df <- excluder_all.df %>%
+  add_column(counts = if_else(excluder_all.df$xtime == -1, TRUE, FALSE))
+
 ```
 
-# dataset with excluder and victim
+
+# dataset with excluder and victim and bystander
 ```{r}
 
-victim_all.df <- victim_all.df %>% 
-  mutate("player" = 1)
-
-
-excluder_all.df <- excluder_all.df %>% 
-  mutate("player" = -1)
+all_players_data <- rbind(excluder_all.df, victim_all.df, bystander_all.df)
 
 ```
 
@@ -2788,7 +2787,7 @@ library(glmmTMB)
 
 
 
-#independence of observations - look at clumping in plot in the data points
+#independence of observations - look at clumping in plot in the data points?? 
 exc_linearity_model <-plot_model(excluder_modelexclusion, type="resid", show.data = TRUE, show.loess = FALSE)
 exc_linearity_model
 
@@ -2803,6 +2802,7 @@ vic_linearity_model
 
 exc_modeldiagnostics <- plot_model(excluder_modelexclusion, type = "diag")
 vic_modeldiagnostics <- plot_model(victim_modelexclusion, type = "diag")
+
 
 exc_modeldiagnostics[[1]]
 exc_modeldiagnostics[[2]]
@@ -2828,6 +2828,8 @@ hist(resid(victim_modelexclusion))
 
 plot(fitted(excluder_modelexclusion),residuals(excluder_modelexclusion))
 plot(fitted(victim_modelexclusion),residuals(victim_modelexclusion))
+
+exc_modeldiagnostics[[1]]
 
 #check for homogeneity of variance
 plot(excluder_modelexclusion)
@@ -2948,7 +2950,7 @@ mean(LT_p1_post$post)
 sd(LT_p1_post$post)
 
 
-means_sd <- list(HS_p1_pre$pre,HS_p1_post$post, HS_p3_pre$pre,HS_p3_post$post) %>% reduce(left_join, by="player_id")
+# means_sd <- list(HS_p1_pre$pre,HS_p1_post$post, HS_p3_pre$pre,HS_p3_post$post) %>% reduce(left_join, by="player_id")
 
 
 
@@ -3118,7 +3120,10 @@ anova(other_need_excluder.lm)
 
 
 #table cor
-apa.cor.table(other_need_excluder.lm,filename = "Example3.doc",table.number = 3,show.conf.interval = F)
+apa.cor.table(representative_excluder.lm,filename = "Representative.doc",table.number = 3,show.conf.interval = F)
+apa.cor.table(identification_excluder.lm,filename = "Identification.doc",table.number = 3,show.conf.interval = F)
+apa.cor.table(own_need_excluder.lm,filename = "OwnNeed.doc",table.number = 3,show.conf.interval = F)
+apa.cor.table(other_need_excluder.lm,filename = "OtherNeed.doc",table.number = 3,show.conf.interval = F)
 ####dont understand output of means? Theyre neg
 
 
