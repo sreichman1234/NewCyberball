@@ -1,0 +1,3298 @@
+---
+title: "thesis"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: cosmo
+    code_download: TRUE
+  
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	error = TRUE,
+	fig.align = "center",
+	fig.height = 4,
+	fig.width = 10,
+	message = FALSE,
+	warning = FALSE,
+	cache = TRUE,
+	dev = "png"
+)
+
+```
+# 
+# #packages
+```{r , include=FALSE}
+ # ###############################################################################################
+#Install required packages - use pacman package to manage installs + loading
+# ###############################################################################################
+
+r <- getOption("repos")
+r["CRAN"] = "https://cran.ms.unimelb.edu.au/"
+options(repos = r)
+
+
+install.packages("pacman")
+
+pacman::p_load(apaTables, beepr, BSDA, car, data.table, devtools, ez, here, gt, Hmisc, interactions, janitor, knitr, lavaan, lme4, lmerTest, magrittr, MASS, ordinal, plyr, probemod, psych, readxl, reghelper, rstatix, skimr, stats, stringr, tidyr, qualtRics,  IPtoCountry, tidyverse,dplyr)
+
+pacman::p_load_current_gh(c("bcjaeger/r2glmm", "crsh/papaja"))
+
+
+##############################################################
+#Install required packages
+###############################################################################################
+
+#Package: apaTables
+if(!require(apaTables)){
+  install.packages("apaTables")
+  library(apaTables)
+}
+
+#Package: beepr
+if(!require(beepr)){
+  install.packages("beepr")
+  library(beepr)
+}
+
+#Package: BSDA
+if(!require(BSDA)){
+  install.packages("BSDA")
+  library(BSDA)
+}
+
+#Package: car
+if(!require(car)){
+  install.packages("car")
+  library(car)
+}
+
+#Package: data.table
+if(!require(data.table)){
+  install.packages("data.table")
+  library(data.table)
+}
+
+#Package: devtools
+if(!require(devtools)){
+  install.packages("devtools")
+  library(devtools)
+}
+
+#Package: dplyr
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+
+#Package: ez
+if(!require(ez)){
+  install.packages("ez")
+  library(ez)
+}
+
+#Pakage: here
+if(!require(here)){
+  install.packages("here")
+  library(here)
+}
+
+#Package: gt
+if(!require(gt)){
+  install.packages("gt")
+  library(gt)
+}
+
+#Package: Hmisc
+if(!require(Hmisc)){
+  install.packages("Hmisc")
+  library(Hmisc)
+}
+
+#Package: interactions
+if(!require(interactions)){
+  install.packages("interactions")
+  library(interactions)
+}
+
+#Package: janitor
+if(!require(janitor)){
+  install.packages("janitor")
+  library(janitor)
+}
+
+#Package: knitr
+if(!require(knitr)){
+  install.packages("knitr")
+  library(knitr)
+}
+
+#Package: lavaan
+if(!require(lavaan)){
+  install.packages("lavaan")
+  library(lavaan)
+}
+
+#Package: lme4
+if(!require(lme4)){
+  install.packages("lme4")
+  library(lme4)
+}
+
+#Package: lmerTest
+if(!require(lmerTest)){
+  install.packages("lmerTest")
+  library(lmerTest)
+}
+
+#Package: magrittr
+if(!require(magrittr)){
+  install.packages("magrittr")
+  library(magrittr)
+}
+
+#Package: MASS
+if(!require(MASS)){
+  install.packages("MASS")
+  library(MASS)
+}
+
+#Package: ordinal
+if(!require(ordinal)){
+  install.packages("ordinal")
+  library(ordinal)
+}
+
+#Package: plyr
+if(!require(plyr)){
+  install.packages("plyr")
+  library(plyr)
+}
+
+# #Package: probemod
+# if(!require(probemod)){
+#   install.packages("probemod")
+#   library(probemod)
+# }
+
+#Package: psych
+if(!require(psych)){
+  install.packages("psych")
+  library(psych)
+}
+
+#Package: readxl
+if(!require(readxl)){
+  install.packages("readxl")
+  library(readxl)
+}
+
+#Package: reghelper
+if(!require(reghelper)){
+  install.packages("reghelper")
+  library(reghelper)
+}
+
+#Package: rstatix
+if(!require(rstatix)){
+  install.packages("rstatix")
+  library(rstatix)
+}
+
+#Package: skimr
+if(!require(skimr)){
+  install.packages("skimr")
+  library(skimr)
+}
+
+#Package: stats
+if(!require(stats)){
+  install.packages("stats")
+  library(stats)
+}
+
+#Package: stringr
+if(!require(stringr)){
+  install.packages("stringr")
+  library(stringr)
+}
+
+#Package: tidyverse
+if(!require(tidyverse)){
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+
+#Package: tidyr
+if(!require(tidyr)){
+  install.packages("tidyr")
+  library(tidyr)
+}
+
+#Package: qualtRics
+if(!require(qualtRics)){
+  install.packages("qualtRics")
+  library(qualtRics)
+}
+
+# install_github("crsh/papaja")
+# Package: papaja (github?)
+# if(!require(papaja)){
+#   install.packages("papaja")
+#   library(papaja)
+# }
+
+
+#install_github("crsh/papaja")
+#Package: IPtoCountry
+#if(!require(IPtoCountry)){
+ # install.packages("IPtoCountry")
+#library(IPtoCountry)
+#}
+
+# devtools::install_github("gitronald/IPtoCountry")
+# library(IPtoCountry)
+# data(IPs)
+
+library(reshape2)
+
+install.packages("jsonlite")
+library(jsonlite)
+
+```
+#apatheme
+```{r}
+apatheme=theme_bw()+
+  theme(panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.border=element_blank(),
+        axis.line=element_line(),
+        text=element_text(family='Times'),
+        legend.title=element_blank(),
+        axis.text.y=element_text(size = 12),
+        axis.text.x=element_text(size = 12))
+```
+
+
+###QUALTRICS
+
+#prolificdemog
+
+```{r}
+
+#Read in Prolific Demographics 
+
+ProlificDemog <- read.csv("/Users/sarahreichman/Desktop/Thesis/ProlificDemog.csv", stringsAsFactors=FALSE)
+
+#Select ID variable and Country
+ProlificDemog <- ProlificDemog %>%
+  select(Participant.id, Country.of.residence) %>% rename(prolific_id = Participant.id)
+
+#Combine your main qualtrics dataset with the prolific demogs
+country.df <- merge(trialdata1, ProlificDemog, by = "prolific_id")
+
+#counts of country variables
+summary(factor(country.df$Country.of.residence)) 
+ 
+
+#total =529
+#canada
+(13/529)*100
+
+#ireland
+(2/529)*100
+
+#south africa
+(90/529)*100
+
+#uk
+(223/529)*100
+
+#us
+(201/529)*100
+ 
+
+
+#missing 10 people lowkey...
+```
+
+
+# clean survey
+```{r} 
+
+trialdata <- read.csv("/Users/sarahreichman/Desktop/Thesis/Qualtrics.csv", stringsAsFactors=FALSE)
+
+#identify duplicate IP addresses
+dupefdata <- trialdata %>%
+  get_dupes(IPAddress)
+
+#exclude the duplicates from the data frame
+`%notin%` <- Negate(`%in%`)
+trialdata1 <- filter(trialdata, IPAddress %notin% dupefdata$IPAddress) 
+
+# #get rid of preview observations and two rows of column header info
+# trialdata1 <- subset(trialdata1,DistributionChannel == "anonymous" & trialdata$user_language == "EN")  
+###no one is not EN
+
+#get rid of useless columns
+trialdata1 <- trialdata %>%
+  select(-StartDate, -EndDate, -Status, -IPAddress, -Progress,-Finished, -ResponseId, -RecipientLastName, -RecipientFirstName, -RecipientEmail, -ExternalReference, -DistributionChannel, -LocationLatitude, -LocationLongitude, -RecordedDate, -Consent, -Best_effort, -X1, -X2, -X3, -X4, -X5, -X6, -X7, -X8, -X9, -AvatarSelection, -AvatarSelection_1_x, -AvatarSelection_1_y,-Q_RelevantIDDuplicate, -Q_RelevantIDDuplicateScore, -Q_RelevantIDFraudScore, -Q_RelevantIDLastStartDate, -CODE, -timingSH_First.Click, -timingSH_Last.Click, -timingSH_Page.Submit, -timingSH_Click.Count, -timingSL_First.Click, -timingSL_Last.Click, -timingSL_Page.Submit, -timingSL_Click.Count,   -timingSC_First.Click, -timingSC_Last.Click, -timingSC_Page.Submit, -timingSC_Click.Count,   -timingTL_First.Click, -timingTL_Last.Click, -timingTL_Page.Submit, -timingTL_Click.Count, -timingTC_First.Click, -timingTC_Last.Click, -timingTC_Page.Submit, -timingTC_Click.Count, -timingTH_First.Click, -timingTH_Last.Click, -timingTH_Page.Submit, -timingTH_Click.Count) %>%
+  clean_names() %>%
+  remove_empty(which=c("rows","cols"))
+
+#
+#make columns numeric
+# trialdata1 <-trialdata1 %>% as.numeric(c(6:46))
+# asNumericMatrix(trialdata1(c, (6:46)))
+
+
+
+
+
+##separating the condition column
+
+trialdata1['condition'] <- trialdata1[c('context', 'status')] <- str_split_fixed(trialdata1[['condition']], '_', 2)
+#remove row 1 and 2 as it contains {"ImportId":"... 
+trialdata1 <-trialdata1[-c(1,2), ]
+
+
+
+`%notin%` <- Negate(`%in%`)
+low_DQS <- filter(trialdata1, dqs_q1 < 5 | dqs_q2 < 5  | dqs_q3 > 5  | dqs_q5 > 5)
+trialdata1 <- filter(trialdata1, prolific_id %notin% low_DQS$prolific_id)
+view(trialdata1)
+
+write.csv(trialdata1,"../experiments/trialcleandata.csv")
+```
+
+
+## manipulation check for task and social
+
+```{r}
+
+  
+## manipulation check for task and social
+
+trialdata1$rel_tension <- as.numeric(trialdata1$rel_tension)
+
+trialdata1$task_tension <- as.numeric(trialdata1$task_tension)
+
+# #dummy coded context
+# #2 is social and 3 is task
+# trialdata1$context <- unclass(as.factor(trialdata1$context))
+# #4 is low
+# #3 is high
+# #2 is control
+# trialdata1$status <- unclass(as.factor(trialdata1$status))
+
+
+rel.aov <- aov(rel_tension ~ context, data = trialdata1)
+summary(rel.aov)
+
+task.aov <- aov(task_tension ~ context, data = trialdata1)
+summary(task.aov)
+```
+
+#boxplot suss check for task and social 
+```{r}
+
+ggplot(trialdata1, aes(x = as.factor(context), y = rel_tension)) + 
+geom_boxplot() + stat_summary(fun.y=mean, geom="point", shape=23, size=4)
+
+
+ggplot(trialdata1, aes(x = as.factor(context), y = task_tension)) +
+geom_boxplot()+ stat_summary(fun=mean, geom="point", shape=23, size=4)
+```
+
+
+## stacking coloums with same qs
+
+```{r}
+
+
+#three data sets so that 
+trialdata_low <-subset(trialdata1, status == "low") %>% discard(~all(is.na(.) | . =="")) %>% select(-duration_in_seconds,-q_recaptcha_score, -suspicion, -funnel1, -prolific_pid , -time_block_consent, -time_block_besteffort, -time_block_rme_instruction, -time_block_rme, -time_block_cyberball_low, -time_block_age, -time_block_gender, -time_block_nationality, -time_block_data_quality, -time_block_effort, -time_block_social_feedback, -condition)
+
+
+trialdata_control <-subset(trialdata1, status == "control")  %>% discard(~all(is.na(.) | . ==""))%>% select(-duration_in_seconds,-q_recaptcha_score, -suspicion, -funnel1, -prolific_pid , -time_block_consent, -time_block_besteffort, -time_block_rme_instruction, -time_block_rme, -time_block_cyberball_control, -time_block_age, -time_block_gender, -time_block_nationality, -time_block_data_quality, -time_block_effort, -time_block_social_feedback, -condition)
+
+
+trialdata_high <-subset(trialdata1, status == "high")  %>% discard(~all(is.na(.) | . ==""))%>% select(-duration_in_seconds,-q_recaptcha_score, -suspicion, -funnel1, -prolific_pid , -time_block_consent, -time_block_besteffort, -time_block_rme_instruction, -time_block_rme, -time_block_cyberball_high, -time_block_age, -time_block_gender, -time_block_nationality, -time_block_data_quality, -time_block_effort, -time_block_social_feedback, -condition)
+
+
+##im going to join this in excel 
+write_xlsx(trialdata_low,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_low.xlsx")
+write_xlsx(trialdata_control,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_control.xlsx")
+write_xlsx(trialdata_high,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_high.xlsx")
+
+# 
+# jointdataset <- bind_rows(trialdata_low, trialdata_control, trialdata_high)
+# crossing(trialdata_low, trialdata_control, trialdata_high)
+```
+
+#race&stop
+```{r, include=FALSE}
+# This script tests for a race-and-stop pattern
+# The criterion number of "flags" selected in the last step is designed for 8 blocks
+#be sure to replace data frame name in parentheses (line 6), variable names for blocks
+
+# 
+# df.sum <- as.data.frame(trialdata1) %>%
+#   select(c(prolific_pid,time_block_consent, time_block_besteffort, time_block_rme_instruction, time_block_rme, time_block_cyberball_low, time_block_age, time_block_gender, time_block_nationality, time_block_data_quality, time_block_effort, time_block_social_feedback)) 
+# 
+# 
+# 
+# write.csv(trialdata1,"../experiments/26thtrial1.csv")
+
+
+
+
+
+#selecting just the time-block timestamp variables
+
+
+
+#may need to add time_block_high & time_block_control
+# 
+# df.sum <- df %>%
+#   select(c(prolific_pid,time_block_consent, time_block_besteffort, time_block_rme_instruction, time_block_rme, time_block_cyberball_low, time_block_age, time_block_gender, time_block_nationality, time_block_data_quality, time_block_effort, time_block_social_feedback)) 
+
+
+#ERROR!
+#as.numeric(trialdata_Sept26$time_block_age)
+# [1] NA
+# Warning message:
+# NAs introduced by coercion 
+
+# 
+# #calculating time spent per block and converting to regular numeric format
+# df.sum$duration_block1 <- df.sum[[time_block_besteffort]] - df.sum[[time_block_consent]]
+# df.sum$duration_block2 <- as.numeric(df.sum$time_block_rme_instruction - df.sum$time_block_besteffort)
+# df.sum$duration_block3 <- as.numeric(df.sum$time_block_rme - df.sum$time_block_rme_instruction)
+# df.sum$duration_block4 <- as.numeric(df.sum$time_block_cyberball_low - df.sum$time_block_rme)
+# df.sum$duration_block5 <- as.numeric(df.sum$time_block_age - df.sum$time_block_cyberball_low)
+# df.sum$duration_block6 <- as.numeric(df.sum$time_block_gender - df.sum$time_block_age)
+# df.sum$duration_block7 <- as.numeric(df.sum$time_block_nationality - df.sum$time_block_gender)
+# df.sum$duration_block8 <- as.numeric(df.sum$time_block_data_quality - df.sum$time_block_nationality)
+# df.sum$duration_block9 <- as.numeric(df.sum$time_block_effort - df.sum$time_block_data_quality)
+# df.sum$duration_block10 <- as.numeric(df.sum$time_block_social_feedback - df.sum$time_block_effort)
+# 
+# 
+# 
+# 
+# #pulling out just the duration vars
+# df.sumdur <- df.sum[ , 13:22]
+# 
+# #standardising vars to see where there are outlying values
+# sc.df <- as.data.frame(scale(df.sumdur))
+# scaled.df <- as.data.frame(cbind(df.sum$prolific_id,sc.df)) 
+# colnames(scaled.df)[1]<-"prolific_id"
+# scaled.df 
+# 
+# #create variable to identify number of blocks where someone's timing was outside 3SD
+# scaled.df$flags <- rowSums(abs(scaled.df[, -1]) > 3)
+# 
+# #and then subset those with between 1 and 7 discrepant blocks
+# racestop.df <- subset(scaled.df,(flags > 1 & flags < 8)) 
+# 
+# #source('race_and_stop.R') 
+# 
+# `%notin%` <- Negate(`%in%`)
+# cut.racers <- filter(betterdata, prolific_id %notin% racestop.df$prolific_id) 
+# betterdata <- cut.racers
+
+
+```
+
+#gender
+```{r}
+
+#devtools::install_github("ropenscilabs/gendercoder")
+library(gendercoder)
+gender <- trialdata1 %>% tibble(gender = c("male", "MALE", "mle", "I am male", "femail", "female", "enby")) %>%
+  mutate(manylevels_gender  = recode_gender(gender, dictionary = manylevels_en, retain_unmatched = TRUE),
+         fewlevels_gender = recode_gender(gender, dictionary = fewlevels_en, retain_unmatched = FALSE)
+  )
+
+
+summary(factor(trialdata1$gender)) 
+
+#other = 26, AFAB, 2*fluid, Male/Non Binary, non-binary, transmasculine
+#=7
+#(7/539)*100
+
+# m = 1+2+72+238+2+1+4+1+1+1
+# =323
+(323/539)*100
+
+
+# f=1+2+68+107+6+2+21+1+1
+# 
+# =209
+(209/539)*100
+
+
+
+#total   323+209+7= 539
+```
+
+#age
+```{r}
+
+min((as.numeric(trialdata1$age))) + 13
+max((as.numeric(trialdata1$age))) + 13
+
+mean(as.numeric(trialdata1$age)) + 13
+sd(as.numeric(trialdata1$age))
+
+```
+
+
+#poor data q 
+
+```{r} 
+  
+  
+sum(is.na(as.numeric(low_DQS$effort_check)))
+#156 participants with na - but do they even have cyberball??
+# 
+# 
+# poor data 35 ppl
+
+
+# in cyberball data is 469 ppl
+
+```
+
+#part 1 HS
+
+##read in HS
+```{r }
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-highStatusSocialStudy-export.json"
+HS<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+HS_dataraw <- enframe(unlist(HS))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  HS_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+HS.df <- HS_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+HS_ball.df <- HS.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high social
+```{r}
+#only ball data
+HS_ball.df <- HS.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+HS_ballplayer.df <- filter(HS_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+HS_ballminutes.df <- filter(HS_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+HS_ballseco.df <- filter(HS_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+HS_balltype.df <- filter(HS_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballHS_wide <- cbind(HS_ballplayer.df, HS_ballminutes.df$minutes, HS_ballseco.df$seconds, HS_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+HS_ballminutes.df$minutes <-as.numeric(HS_ballminutes.df$minutes)*60
+
+#making seconds numeric
+HS_ballseco.df$seconds <- as.numeric(HS_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+HS_ballseconds <- HS_ballminutes.df$minutes+HS_ballseco.df$seconds
+
+#adding seconds to the data
+ballHS_wide <- cbind(HS_ballplayer.df, HS_ballseconds, HS_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high social
+```{r}
+HS_chat.df <- filter(HS.df, datatype == "chatData") 
+HS_chattext.df <- filter(HS_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+HS_chatminutes.df <- filter(HS_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+HS_chatseco.df <- filter(HS_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatHS_chatseco.dfwide <- cbind(HS_chattext.df, HS_chatminutes.df$minutes, HS_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+HS_chatminutes.df$minutes <-as.numeric(HS_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+HS_chatseco.df$seconds <- as.numeric(HS_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+HS_chatseconds <- HS_chatminutes.df$minutes+HS_chatseco.df$seconds
+
+#adding time to the data
+chatHS_wide <- cbind(HS_chattext.df, HS_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+HS_exclusions.df <- filter(chatHS_wide, HS_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+
+```
+
+## HS split data into pre and post exclusion
+
+
+##HS ball lead
+
+```{r}
+# we want to split the dataset HS_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- HS_exclusions.df$HS_chatseconds
+#when HS_ball2.df $ballseconds is less than or equal to HS_exclusions.df$HS_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballHS_wide$catch <- lead(ballHS_wide$player)
+HS_ballhigh.df <- subset(ballHS_wide, HS_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, HS_ballseconds)) 
+
+#only participant 2 throws
+HS_ball2.df  <- subset(HS_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+HS_exclusionball.df <- merge(x=HS_ball2.df , y=HS_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+HS_exclusion<-with(HS_exclusionball.df,HS_exclusionball.df$HS_ballseconds<HS_chatseconds)
+
+HS_exclusionball.df  <- cbind(HS_exclusionball.df, HS_exclusion)  
+
+#two new datasets pre and post
+HS_preexclusion <- subset(HS_exclusionball.df, HS_exclusionball.df$HS_exclusion=="FALSE")%>% select(c(player_id, player, catch, HS_ballseconds)) 
+
+HS_postexclusion <- subset(HS_exclusionball.df, HS_exclusionball.df$HS_exclusion=="TRUE")%>% select(c(player_id, player, catch, HS_ballseconds))
+
+```
+
+## HS calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+HS_totalparticipantthrows_pre <- HS_preexclusion %>% count(player_id)
+names(HS_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+HS_totalparticipantthrows_post <- HS_postexclusion %>% count(player_id)
+names(HS_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+HS_playerexclusion_pre <- HS_preexclusion %>% count(player_id, catch)
+HS_playerexclusion_post <- HS_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+## HS pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+HS_player1pre<- subset(HS_playerexclusion_pre, HS_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+HS_p1_pre <- merge(x=HS_totalparticipantthrows_pre, y=HS_player1pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+HS_p1_pre$pre <- HS_p1_pre$n/HS_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+HS_player1post<- subset(HS_playerexclusion_post, HS_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+HS_p1_post <- merge(x = HS_totalparticipantthrows_post, y = HS_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HS_p1_post$post <- HS_p1_post$n/HS_p1_post$total
+
+```
+
+###HS p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HS_p1_exclusion <- merge(x=HS_p1_pre, y=HS_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HS_p1_exclusion_pivot <- pivot_longer(
+  HS_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HS_p1_exclusion_full <- merge(x=HS_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+## HS pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+HS_player3pre<- subset(HS_playerexclusion_pre, HS_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+HS_p3_pre <- merge(x=HS_totalparticipantthrows_pre, y=HS_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+HS_p3_pre$pre <- HS_p3_pre$n/HS_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+HS_player3post<- subset(HS_playerexclusion_post, HS_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+HS_p3_post <- merge(x = HS_totalparticipantthrows_post, y = HS_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HS_p3_post$post <- HS_p3_post$n/HS_p3_post$total
+
+```
+
+###HS p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HS_p3_exclusion <- merge(x=HS_p3_pre, y=HS_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HS_p3_exclusion_pivot <- pivot_longer(
+  HS_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HS_p3_exclusion_full <- merge(x=HS_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+## HS pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+HS_player4pre<- subset(HS_playerexclusion_pre, HS_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+HS_p4_pre <- merge(x=HS_totalparticipantthrows_pre, y=HS_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+HS_p4_pre$pre <- HS_p4_pre$n/HS_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+HS_player4post<- subset(HS_playerexclusion_post, HS_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+HS_p4_post <- merge(x = HS_totalparticipantthrows_post, y = HS_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HS_p4_post$post <- HS_p4_post$n/HS_p4_post$total
+
+```
+
+###HS p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HS_p4_exclusion <- merge(x=HS_p4_pre, y=HS_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HS_p4_exclusion_pivot <- pivot_longer(
+  HS_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HS_p4_exclusion_full <- merge(x=HS_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+## HS t-test
+```{r}
+# library(lsr)
+# #player 1
+# HS_t.testp1 <-cbind(HS_preproportionp1,HS_postproportionp1)
+# HS_t.testp1 <- data.frame(HS_t.testp1)
+# pairedSamplesTTest(
+#      ~ HS_preproportionp1 + HS_postproportionp1, HS_t.testp1)
+# 
+# 
+# #player 3
+# HS_t.testp3 <- cbind(HS_preproportionp3, HS_postproportionp3)
+# HS_t.testp3 <- data.frame(HS_t.testp3)
+# pairedSamplesTTest(
+#      ~ HS_preproportionp3 + HS_postproportionp3, HS_t.testp3)
+# 
+# 
+# 
+# #player 4
+# HS_t.testp4 <- cbind(HS_preproportionp4, HS_postproportionp4)
+# HS_t.testp4 <- data.frame(HS_t.testp4)
+# pairedSamplesTTest(
+#      ~ HS_preproportionp4 + HS_postproportionp4, HS_t.testp4)
+
+```
+
+#part 2 HT
+
+##read in HT
+```{r }
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-highStatusTaskStudy-export.json"
+HT<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+HT_dataraw <- enframe(unlist(HT))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  HT_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+HT.df <- HT_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+HT_ball.df <- HT.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high task
+```{r}
+#only ball data
+HT_ball.df <- HT.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+HT_ballplayer.df <- filter(HT_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+HT_ballminutes.df <- filter(HT_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+HT_ballseco.df <- filter(HT_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+HT_balltype.df <- filter(HT_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballHT_wide <- cbind(HT_ballplayer.df, HT_ballminutes.df$minutes, HT_ballseco.df$seconds, HT_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+HT_ballminutes.df$minutes <-as.numeric(HT_ballminutes.df$minutes)*60
+
+#making seconds numeric
+HT_ballseco.df$seconds <- as.numeric(HT_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+HT_ballseconds <- HT_ballminutes.df$minutes+HT_ballseco.df$seconds
+
+#adding seconds to the data
+ballHT_wide <- cbind(HT_ballplayer.df, HT_ballseconds, HT_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high task
+```{r}
+HT_chat.df <- filter(HT.df, datatype == "chatData") 
+HT_chattext.df <- filter(HT_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+HT_chatminutes.df <- filter(HT_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+HT_chatseco.df <- filter(HT_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatHT_chatseco.dfwide <- cbind(HT_chattext.df, HT_chatminutes.df$minutes, HT_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+HT_chatminutes.df$minutes <-as.numeric(HT_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+HT_chatseco.df$seconds <- as.numeric(HT_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+HT_chatseconds <- HT_chatminutes.df$minutes+HT_chatseco.df$seconds
+
+#adding time to the data
+chatHT_wide <- cbind(HT_chattext.df, HT_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+HT_exclusions.df <- filter(chatHT_wide, HT_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+
+```
+
+##HT split data into pre and post exclusion
+
+
+##HT ball lead
+
+```{r}
+# we want to split the dataset HT_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- HT_exclusions.df$HT_chatseconds
+#when HT_ball2.df $HT_ballseconds is less than or equal to HT_exclusions.df$HT_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballHT_wide$catch <- lead(ballHT_wide$player)
+HT_ballhigh.df <- subset(ballHT_wide, HT_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, HT_ballseconds)) 
+
+#only participant 2 throws
+HT_ball2.df  <- subset(HT_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+HT_exclusionball.df <- merge(x=HT_ball2.df , y=HT_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+HT_exclusion<-with(HT_exclusionball.df,HT_exclusionball.df$HT_ballseconds<HT_chatseconds)
+
+HT_exclusionball.df  <- cbind(HT_exclusionball.df, HT_exclusion)  
+
+#two new datasets pre and post
+HT_preexclusion <- subset(HT_exclusionball.df, HT_exclusionball.df$HT_exclusion=="FALSE")%>% select(c(player_id, player, catch, HT_ballseconds)) 
+
+HT_postexclusion <- subset(HT_exclusionball.df, HT_exclusionball.df$HT_exclusion=="TRUE")%>% select(c(player_id, player, catch, HT_ballseconds))
+
+```
+
+##HT calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+HT_totalparticipantthrows_pre <- HT_preexclusion %>% count(player_id)
+names(HT_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+HT_totalparticipantthrows_post <- HT_postexclusion %>% count(player_id)
+names(HT_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+HT_playerexclusion_pre <- HT_preexclusion %>% count(player_id, catch)
+HT_playerexclusion_post <- HT_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+
+
+
+
+##HT pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+HT_player1pre<- subset(HT_playerexclusion_pre, HT_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+HT_p1_pre <- merge(x=HT_totalparticipantthrows_pre, y=HT_player1pre, by.x = "player_id")
+
+
+#n column and divide it by the n in total
+HT_p1_pre$pre <- HT_p1_pre$n/HT_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+HT_player1post<- subset(HT_playerexclusion_post, HT_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+HT_p1_post <- merge(x = HT_totalparticipantthrows_post, y = HT_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HT_p1_post$post <- HT_p1_post$n/HT_p1_post$total
+
+```
+
+###HT p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HT_p1_exclusion <- merge(x=HT_p1_pre, y=HT_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HT_p1_exclusion_pivot <- pivot_longer(
+  HT_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HT_p1_exclusion_full <- merge(x=HT_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##HT pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+HT_player3pre<- subset(HT_playerexclusion_pre, HT_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+HT_p3_pre <- merge(x=HT_totalparticipantthrows_pre, y=HT_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+HT_p3_pre$pre <- HT_p3_pre$n/HT_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+HT_player3post<- subset(HT_playerexclusion_post, HT_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+HT_p3_post <- merge(x = HT_totalparticipantthrows_post, y = HT_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HT_p3_post$post <- HT_p3_post$n/HT_p3_post$total
+
+```
+
+###HT p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HT_p3_exclusion <- merge(x=HT_p3_pre, y=HT_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HT_p3_exclusion_pivot <- pivot_longer(
+  HT_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HT_p3_exclusion_full <- merge(x=HT_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+## HT pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+HT_player4pre<- subset(HT_playerexclusion_pre, HT_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+HT_p4_pre <- merge(x=HT_totalparticipantthrows_pre, y=HT_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+HT_p4_pre$pre <- HT_p4_pre$n/HT_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+HT_player4post<- subset(HT_playerexclusion_post, HT_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+HT_p4_post <- merge(x = HT_totalparticipantthrows_post, y = HT_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+HT_p4_post$post <- HT_p4_post$n/HT_p4_post$total
+
+```
+
+###HT p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+HT_p4_exclusion <- merge(x=HT_p4_pre, y=HT_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+HT_p4_exclusion_pivot <- pivot_longer(
+  HT_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+HT_p4_exclusion_full <- merge(x=HT_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+##HT t-test
+```{r}
+# library(lsr)
+# #player 1
+# HT_t.testp1 <-cbind(HT_preproportionp1,HT_postproportionp1)
+# HT_t.testp1 <- data.frame(HT_t.testp1)
+# pairedSamplesTTest(
+#      ~ HT_preproportionp1 + HT_postproportionp1, HT_t.testp1)
+# 
+# 
+# #player 3
+# HT_t.testp3 <- cbind(HT_preproportionp3, HT_postproportionp3)
+# HT_t.testp3 <- data.frame(HT_t.testp3)
+# pairedSamplesTTest(
+#      ~ HT_preproportionp3 + HT_postproportionp3, HT_t.testp3)
+# 
+# 
+# 
+# #player 4
+# HT_t.testp4 <- cbind(HT_preproportionp4, HT_postproportionp4)
+# HT_t.testp4 <- data.frame(HT_t.testp4)
+# pairedSamplesTTest(
+#      ~ HT_preproportionp4 + HT_postproportionp4, HT_t.testp4)
+
+```
+
+#part 3 Moderate Social MS
+
+##read in MS
+```{r }
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-noStatusSocialStudy-export.json"
+MS<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+MS_dataraw <- enframe(unlist(MS))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  MS_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+MS.df <- MS_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+MS_ball.df <- MS.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high task
+```{r}
+#only ball data
+MS_ball.df <- MS.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+MS_ballplayer.df <- filter(MS_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+MS_ballminutes.df <- filter(MS_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+MS_ballseco.df <- filter(MS_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+MS_balltype.df <- filter(MS_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballMS_wide <- cbind(MS_ballplayer.df, MS_ballminutes.df$minutes, MS_ballseco.df$seconds, MS_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+MS_ballminutes.df$minutes <-as.numeric(MS_ballminutes.df$minutes)*60
+
+#making seconds numeric
+MS_ballseco.df$seconds <- as.numeric(MS_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+MS_ballseconds <- MS_ballminutes.df$minutes+MS_ballseco.df$seconds
+
+#adding seconds to the data
+ballMS_wide <- cbind(MS_ballplayer.df, MS_ballseconds, MS_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high task
+```{r}
+MS_chat.df <- filter(MS.df, datatype == "chatData") 
+MS_chattext.df <- filter(MS_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+MS_chatminutes.df <- filter(MS_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+MS_chatseco.df <- filter(MS_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatMS_chatseco.dfwide <- cbind(MS_chattext.df, MS_chatminutes.df$minutes, MS_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+MS_chatminutes.df$minutes <-as.numeric(MS_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+MS_chatseco.df$seconds <- as.numeric(MS_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+MS_chatseconds <- MS_chatminutes.df$minutes+MS_chatseco.df$seconds
+
+#adding time to the data
+chatMS_wide <- cbind(MS_chattext.df, MS_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+MS_exclusions.df <- filter(chatMS_wide, MS_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+
+```
+
+## split data into pre and post exclusion
+
+
+3#ball lead
+
+```{r}
+# we want to split the dataset MS_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- MS_exclusions.df$MS_chatseconds
+#when MS_ball2.df $MS_ballseconds is less than or equal to MS_exclusions.df$MS_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballMS_wide$catch <- lead(ballMS_wide$player)
+MS_ballhigh.df <- subset(ballMS_wide, MS_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, MS_ballseconds)) 
+
+#only participant 2 throws
+MS_ball2.df  <- subset(MS_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+MS_exclusionball.df <- merge(x=MS_ball2.df , y=MS_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+MS_exclusion<-with(MS_exclusionball.df,MS_exclusionball.df$MS_ballseconds<MS_chatseconds)
+
+MS_exclusionball.df  <- cbind(MS_exclusionball.df, MS_exclusion)  
+
+#two new datasets pre and post
+MS_preexclusion <- subset(MS_exclusionball.df, MS_exclusionball.df$MS_exclusion=="FALSE")%>% select(c(player_id, player, catch, MS_ballseconds)) 
+
+MS_postexclusion <- subset(MS_exclusionball.df, MS_exclusionball.df$MS_exclusion=="TRUE")%>% select(c(player_id, player, catch, MS_ballseconds))
+
+```
+
+##calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+MS_totalparticipantthrows_pre <- MS_preexclusion %>% count(player_id)
+names(MS_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+MS_totalparticipantthrows_post <- MS_postexclusion %>% count(player_id)
+names(MS_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+MS_playerexclusion_pre <- MS_preexclusion %>% count(player_id, catch)
+MS_playerexclusion_post <- MS_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+##pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+MS_player1pre<- subset(MS_playerexclusion_pre, MS_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+MS_p1_pre <- merge(x=MS_totalparticipantthrows_pre, y=MS_player1pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MS_p1_pre$pre <- MS_p1_pre$n/MS_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+MS_player1post<- subset(MS_playerexclusion_post, MS_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+MS_p1_post <- merge(x = MS_totalparticipantthrows_post, y = MS_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MS_p1_post$post <- MS_p1_post$n/MS_p1_post$total
+
+```
+
+###MS p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MS_p1_exclusion <- merge(x=MS_p1_pre, y=MS_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MS_p1_exclusion_pivot <- pivot_longer(
+  MS_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MS_p1_exclusion_full <- merge(x=MS_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+MS_player3pre<- subset(MS_playerexclusion_pre, MS_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+MS_p3_pre <- merge(x=MS_totalparticipantthrows_pre, y=MS_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MS_p3_pre$pre <- MS_p3_pre$n/MS_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+MS_player3post<- subset(MS_playerexclusion_post, MS_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+MS_p3_post <- merge(x = MS_totalparticipantthrows_post, y = MS_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MS_p3_post$post <- MS_p3_post$n/MS_p3_post$total
+
+```
+
+###MS p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MS_p3_exclusion <- merge(x=MS_p3_pre, y=MS_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MS_p3_exclusion_pivot <- pivot_longer(
+  MS_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MS_p3_exclusion_full <- merge(x=MS_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+MS_player4pre<- subset(MS_playerexclusion_pre, MS_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+MS_p4_pre <- merge(x=MS_totalparticipantthrows_pre, y=MS_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MS_p4_pre$pre <- MS_p4_pre$n/MS_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+MS_player4post<- subset(MS_playerexclusion_post, MS_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+MS_p4_post <- merge(x = MS_totalparticipantthrows_post, y = MS_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MS_p4_post$post <- MS_p4_post$n/MS_p4_post$total
+
+```
+
+###MS p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MS_p4_exclusion <- merge(x=MS_p4_pre, y=MS_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MS_p4_exclusion_pivot <- pivot_longer(
+  MS_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MS_p4_exclusion_full <- merge(x=MS_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+
+##t-test
+```{r}
+library(lsr)
+#player 1
+# MS_t.testp1 <- cbind(MS_preproportionp1, MS_postproportionp1)
+# MS_t.testp1 <- data.frame(MS_t.testp1)
+# pairedSamplesTTest(
+#      ~ MS_preproportionp1 + MS_postproportionp1, MS_t.testp1)
+# 
+# 
+# #player 3
+# MS_t.testp3 <- cbind(MS_preproportionp3, MS_postproportionp3)
+# MS_t.testp3 <- data.frame(MS_t.testp3)
+# pairedSamplesTTest(
+#      ~ MS_preproportionp3 + MS_postproportionp3, MS_t.testp3)
+# 
+# 
+# 
+# #player 4
+# MS_t.testp4 <- cbind(MS_preproportionp4, MS_postproportionp4)
+# MS_t.testp4 <- data.frame(MS_t.testp4)
+# pairedSamplesTTest(
+#      ~ MS_preproportionp4 + MS_postproportionp4, MS_t.testp4)
+
+```
+
+
+#part 4 Moderate Task MT
+
+##read in MT
+```{r }
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-noStatusTaskStudy-export.json"
+MT<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+MT_dataraw <- enframe(unlist(MT))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  MT_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+MT.df <- MT_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+MT_ball.df <- MT.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high task
+```{r}
+#only ball data
+MT_ball.df <- MT.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+MT_ballplayer.df <- filter(MT_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+MT_ballminutes.df <- filter(MT_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+MT_ballseco.df <- filter(MT_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+MT_balltype.df <- filter(MT_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballMT_wide <- cbind(MT_ballplayer.df, MT_ballminutes.df$minutes, MT_ballseco.df$seconds, MT_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+MT_ballminutes.df$minutes <-as.numeric(MT_ballminutes.df$minutes)*60
+
+#making seconds numeric
+MT_ballseco.df$seconds <- as.numeric(MT_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+MT_ballseconds <- MT_ballminutes.df$minutes+MT_ballseco.df$seconds
+
+#adding seconds to the data
+ballMT_wide <- cbind(MT_ballplayer.df, MT_ballseconds, MT_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high task
+```{r}
+MT_chat.df <- filter(MT.df, datatype == "chatData") 
+MT_chattext.df <- filter(MT_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+MT_chatminutes.df <- filter(MT_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+MT_chatseco.df <- filter(MT_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatMT_chatseco.dfwide <- cbind(MT_chattext.df, MT_chatminutes.df$minutes, MT_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+MT_chatminutes.df$minutes <-as.numeric(MT_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+MT_chatseco.df$seconds <- as.numeric(MT_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+MT_chatseconds <- MT_chatminutes.df$minutes+MT_chatseco.df$seconds
+
+#adding time to the data
+chatMT_wide <- cbind(MT_chattext.df, MT_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+MT_exclusions.df <- filter(chatMT_wide, MT_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+
+```
+
+## split data into pre and post exclusion
+
+
+##ball lead
+
+```{r}
+# we want to split the dataset MT_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- MT_exclusions.df$MT_chatseconds
+#when MT_ball2.df $MT_ballseconds is less than or equal to MT_exclusions.df$MT_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballMT_wide$catch <- lead(ballMT_wide$player)
+MT_ballhigh.df <- subset(ballMT_wide, MT_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, MT_ballseconds)) 
+
+#only participant 2 throws
+MT_ball2.df  <- subset(MT_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+MT_exclusionball.df <- merge(x=MT_ball2.df , y=MT_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+MT_exclusion<-with(MT_exclusionball.df,MT_exclusionball.df$MT_ballseconds<MT_chatseconds)
+
+MT_exclusionball.df  <- cbind(MT_exclusionball.df, MT_exclusion)  
+
+#two new datasets pre and post
+MT_preexclusion <- subset(MT_exclusionball.df, MT_exclusionball.df$MT_exclusion=="FALSE")%>% select(c(player_id, player, catch, MT_ballseconds)) 
+
+MT_postexclusion <- subset(MT_exclusionball.df, MT_exclusionball.df$MT_exclusion=="TRUE")%>% select(c(player_id, player, catch, MT_ballseconds))
+
+```
+
+##calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+MT_totalparticipantthrows_pre <- MT_preexclusion %>% count(player_id)
+names(MT_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+MT_totalparticipantthrows_post <- MT_postexclusion %>% count(player_id)
+names(MT_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+MT_playerexclusion_pre <- MT_preexclusion %>% count(player_id, catch)
+MT_playerexclusion_post <- MT_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+##pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+MT_player1pre<- subset(MT_playerexclusion_pre, MT_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+MT_p1_pre <- merge(x=MT_totalparticipantthrows_pre, y=MT_player1pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MT_p1_pre$pre <- MT_p1_pre$n/MT_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+MT_player1post<- subset(MT_playerexclusion_post, MT_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+MT_p1_post <- merge(x = MT_totalparticipantthrows_post, y = MT_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MT_p1_post$post <- MT_p1_post$n/MT_p1_post$total
+
+```
+
+###MT p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MT_p1_exclusion <- merge(x=MT_p1_pre, y=MT_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MT_p1_exclusion_pivot <- pivot_longer(
+  MT_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MT_p1_exclusion_full <- merge(x=MT_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+MT_player3pre<- subset(MT_playerexclusion_pre, MT_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+MT_p3_pre <- merge(x=MT_totalparticipantthrows_pre, y=MT_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MT_p3_pre$pre <- MT_p3_pre$n/MT_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+MT_player3post<- subset(MT_playerexclusion_post, MT_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+MT_p3_post <- merge(x = MT_totalparticipantthrows_post, y = MT_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MT_p3_post$post <- MT_p3_post$n/MT_p3_post$total
+
+```
+
+###MT p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MT_p3_exclusion <- merge(x=MT_p3_pre, y=MT_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MT_p3_exclusion_pivot <- pivot_longer(
+  MT_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MT_p3_exclusion_full <- merge(x=MT_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+MT_player4pre<- subset(MT_playerexclusion_pre, MT_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+MT_p4_pre <- merge(x=MT_totalparticipantthrows_pre, y=MT_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+MT_p4_pre$pre <- MT_p4_pre$n/MT_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+MT_player4post<- subset(MT_playerexclusion_post, MT_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+MT_p4_post <- merge(x = MT_totalparticipantthrows_post, y = MT_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+MT_p4_post$post <- MT_p4_post$n/MT_p4_post$total
+
+```
+
+###MT p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+MT_p4_exclusion <- merge(x=MT_p4_pre, y=MT_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+MT_p4_exclusion_pivot <- pivot_longer(
+  MT_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+MT_p4_exclusion_full <- merge(x=MT_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+
+##t-test
+```{r}
+# library(lsr)
+# #player 1
+# MT_t.testp1 <- cbind(MT_preproportionp1, MT_postproportionp1)
+# MT_t.testp1 <- data.frame(MT_t.testp1)
+# pairedSamplesTTest(
+#      ~ MT_preproportionp1 + MT_postproportionp1, MT_t.testp1)
+# 
+# 
+# #player 3
+# MT_t.testp3 <- cbind(MT_preproportionp3, MT_postproportionp3)
+# MT_t.testp3 <- data.frame(MT_t.testp3)
+# pairedSamplesTTest(
+#      ~ MT_preproportionp3 + MT_postproportionp3, MT_t.testp3)
+# 
+
+
+# #player 4
+# MT_t.testp4 <- cbind(MT_preproportionp4, MT_postproportionp4)
+# MT_t.testp4 <- data.frame(MT_t.testp4)
+# pairedSamplesTTest(
+#      ~ MT_preproportionp4 + MT_postproportionp4, MT_t.testp4)
+
+```
+
+#part 5 Low Social LS
+
+##read in LS
+```{r }
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-lowStatusSocialStudy-export.json"
+LS<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+LS_dataraw <- enframe(unlist(LS))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  LS_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+LS.df <- LS_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+LS_ball.df <- LS.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high social
+```{r}
+#only ball data
+LS_ball.df <- LS.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+LS_ballplayer.df <- filter(LS_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+LS_ballminutes.df <- filter(LS_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+LS_ballseco.df <- filter(LS_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+LS_balltype.df <- filter(LS_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballLS_wide <- cbind(LS_ballplayer.df, LS_ballminutes.df$minutes, LS_ballseco.df$seconds, LS_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+LS_ballminutes.df$minutes <-as.numeric(LS_ballminutes.df$minutes)*60
+
+#making seconds numeric
+LS_ballseco.df$seconds <- as.numeric(LS_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+LS_ballseconds <- LS_ballminutes.df$minutes+LS_ballseco.df$seconds
+
+#adding seconds to the data
+ballLS_wide <- cbind(LS_ballplayer.df, LS_ballseconds, LS_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high social
+```{r}
+LS_chat.df <- filter(LS.df, datatype == "chatData") 
+LS_chattext.df <- filter(LS_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+LS_chatminutes.df <- filter(LS_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+LS_chatseco.df <- filter(LS_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatLS_chatseco.dfwide <- cbind(LS_chattext.df, LS_chatminutes.df$minutes, LS_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+LS_chatminutes.df$minutes <-as.numeric(LS_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+LS_chatseco.df$seconds <- as.numeric(LS_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+LS_chatseconds <- LS_chatminutes.df$minutes+LS_chatseco.df$seconds
+
+#adding time to the data
+chatLS_wide <- cbind(LS_chattext.df, LS_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+LS_exclusions.df <- filter(chatLS_wide, LS_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+
+```
+
+## split data into pre and post exclusion
+
+
+##ball lead
+
+```{r}
+# we want to split the dataset LS_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- LS_exclusions.df$LS_chatseconds
+#when LS_ball2.df $LS_ballseconds is less than or equal to LS_exclusions.df$LS_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballLS_wide$catch <- lead(ballLS_wide$player)
+LS_ballhigh.df <- subset(ballLS_wide, LS_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, LS_ballseconds)) 
+
+#only participant 2 throws
+LS_ball2.df  <- subset(LS_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+LS_exclusionball.df <- merge(x=LS_ball2.df , y=LS_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+LS_exclusion<-with(LS_exclusionball.df,LS_exclusionball.df$LS_ballseconds<LS_chatseconds)
+
+LS_exclusionball.df  <- cbind(LS_exclusionball.df, LS_exclusion)  
+
+#two new datasets pre and post
+LS_preexclusion <- subset(LS_exclusionball.df, LS_exclusionball.df$LS_exclusion=="FALSE")%>% select(c(player_id, player, catch, LS_ballseconds)) 
+
+LS_postexclusion <- subset(LS_exclusionball.df, LS_exclusionball.df$LS_exclusion=="TRUE")%>% select(c(player_id, player, catch, LS_ballseconds))
+
+```
+
+##calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+LS_totalparticipantthrows_pre <- LS_preexclusion %>% count(player_id)
+names(LS_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+LS_totalparticipantthrows_post <- LS_postexclusion %>% count(player_id)
+names(LS_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+LS_playerexclusion_pre <- LS_preexclusion %>% count(player_id, catch)
+LS_playerexclusion_post <- LS_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+
+
+
+##pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+LS_player1pre<- subset(LS_playerexclusion_pre, LS_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+LS_p1_pre <- merge(x=LS_totalparticipantthrows_pre, y=LS_player1pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LS_p1_pre$pre <- LS_p1_pre$n/LS_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+LS_player1post<- subset(LS_playerexclusion_post, LS_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+LS_p1_post <- merge(x = LS_totalparticipantthrows_post, y = LS_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LS_p1_post$post <- LS_p1_post$n/LS_p1_post$total
+
+```
+
+###LS p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LS_p1_exclusion <- merge(x=LS_p1_pre, y=LS_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LS_p1_exclusion_pivot <- pivot_longer(
+  LS_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LS_p1_exclusion_full <- merge(x=LS_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+LS_player3pre<- subset(LS_playerexclusion_pre, LS_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+LS_p3_pre <- merge(x=LS_totalparticipantthrows_pre, y=LS_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LS_p3_pre$pre <- LS_p3_pre$n/LS_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+LS_player3post<- subset(LS_playerexclusion_post, LS_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+LS_p3_post <- merge(x = LS_totalparticipantthrows_post, y = LS_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LS_p3_post$post <- LS_p3_post$n/LS_p3_post$total
+
+```
+
+###LS p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LS_p3_exclusion <- merge(x=LS_p3_pre, y=LS_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LS_p3_exclusion_pivot <- pivot_longer(
+  LS_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LS_p3_exclusion_full <- merge(x=LS_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+LS_player4pre<- subset(LS_playerexclusion_pre, LS_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+LS_p4_pre <- merge(x=LS_totalparticipantthrows_pre, y=LS_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LS_p4_pre$pre <- LS_p4_pre$n/LS_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+LS_player4post<- subset(LS_playerexclusion_post, LS_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+LS_p4_post <- merge(x = LS_totalparticipantthrows_post, y = LS_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LS_p4_post$post <- LS_p4_post$n/LS_p4_post$total
+
+```
+
+###LS p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LS_p4_exclusion <- merge(x=LS_p4_pre, y=LS_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LS_p4_exclusion_pivot <- pivot_longer(
+  LS_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LS_p4_exclusion_full <- merge(x=LS_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+##t-test
+```{r}
+library(lsr)
+#player 1
+# LS_t.testp1 <- cbind(LS_preproportionp1, LS_postproportionp1)
+# LS_t.testp1 <- data.frame(LS_t.testp1)
+# pairedSamplesTTest(
+#      ~ LS_preproportionp1 + LS_postproportionp1, LS_t.testp1)
+# 
+# 
+# #player 3
+# LS_t.testp3 <- cbind(LS_preproportionp3, LS_postproportionp3)
+# LS_t.testp3 <- data.frame(LS_t.testp3)
+# pairedSamplesTTest(
+#      ~ LS_preproportionp3 + LS_postproportionp3, LS_t.testp3)
+# 
+# 
+# 
+# #player 4
+# LS_t.testp4 <- cbind(LS_preproportionp4, LS_postproportionp4)
+# LS_t.testp4 <- data.frame(LS_t.testp4)
+# pairedSamplesTTest(
+#      ~ LS_preproportionp4 + LS_postproportionp4, LS_t.testp4)
+
+```
+
+
+
+#part 6 Low Task LT
+
+##read in LT
+```{r}
+
+jsonpath<-"/Users/sarahreichman/Desktop/Thesis/overbeck-labs-default-rtdb-lowStatusTaskStudy-export.json"
+LT<-read_json(jsonpath, simplifyVector=TRUE)
+
+#seems to work
+LT_dataraw <- enframe(unlist(LT))
+
+#this is meant to tell us how many columns to keep, but is this right?
+rgx_split <- "\\."
+n_cols_max <-
+  LT_dataraw %>%
+  pull(name) %>% 
+  str_split(rgx_split) %>% 
+  map_dbl(~length(.)) %>% 
+  max()
+n_cols_max
+
+#i over estimated and put 12 because of error message
+LT.df <- LT_dataraw %>% separate(name, into = c(paste0("x", 1:12))) %>% rename(player_id = x1, datatype = x2, action =x3)
+
+#removing empty columns (will need to check this in final dataset!)
+LT_ball.df <- LT.df %>% select(-c(x5, x6, x7, x8, x9, x10, x11, x12)) 
+```
+
+##cyberball - ball high task
+```{r}
+#only ball data
+LT_ball.df <- LT.df %>%
+     filter(str_detect(datatype, "ballData")) %>% 
+  select(-c(datatype)) 
+
+#addballplayer..
+LT_ballplayer.df <- filter(LT_ball.df, substr(action,1,6)=="player") %>% 
+  rename(player=value)
+LT_ballminutes.df <- filter(LT_ball.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+LT_ballseco.df <- filter(LT_ball.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+LT_balltype.df <- filter(LT_ball.df, substr(action,1,4)=="type") %>% 
+  rename(catchthrow=value)
+
+#data frame with ball data 
+ballLT_wide <- cbind(LT_ballplayer.df, LT_ballminutes.df$minutes, LT_ballseco.df$seconds, LT_balltype.df$catchthrow)  
+
+#converting minutes to seconds
+LT_ballminutes.df$minutes <-as.numeric(LT_ballminutes.df$minutes)*60
+
+#making seconds numeric
+LT_ballseco.df$seconds <- as.numeric(LT_ballseco.df$seconds)
+
+#combining minutes and seconds columns
+LT_ballseconds <- LT_ballminutes.df$minutes+LT_ballseco.df$seconds
+
+#adding seconds to the data
+ballLT_wide <- cbind(LT_ballplayer.df, LT_ballseconds, LT_balltype.df$catchthrow) %>% 
+  select(-c(x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+#filter(contenttext="stop")
+#new data file with only chat data
+```
+
+##chat - high task
+```{r}
+LT_chat.df <- filter(LT.df, datatype == "chatData") 
+LT_chattext.df <- filter(LT_chat.df, substr(x4,1,4)=="text") %>% 
+  rename(text=value)
+LT_chatminutes.df <- filter(LT_chat.df, substr(x4,1,4)=="minu") %>% 
+  rename(minutes=value)
+
+LT_chatseco.df <- filter(LT_chat.df, substr(x4,1,4)=="seco") %>% 
+  rename(seconds=value)
+
+
+#data frame with chat data 
+chatLT_chatseco.dfwide <- cbind(LT_chattext.df, LT_chatminutes.df$minutes, LT_chatseco.df$seconds)
+
+
+#converting minutes to seconds
+LT_chatminutes.df$minutes <-as.numeric(LT_chatminutes.df$minutes)*60
+
+
+#making seconds numeric
+LT_chatseco.df$seconds <- as.numeric(LT_chatseco.df$seconds)
+
+#combining minutes and seconds columns
+LT_chatseconds <- LT_chatminutes.df$minutes+LT_chatseco.df$seconds
+
+#adding time to the data
+chatLT_wide <- cbind(LT_chattext.df, LT_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+LT_exclusions.df <- filter(chatLT_wide, LT_chattext.df$text == "Let’s stop throwing the ball to them")
+  
+
+##############################
+chatLT_wide <- cbind(LT_chattext.df, LT_chatseconds) %>% 
+  select(-c(action, datatype, x4, x5, x6, x7, x8, x9, x10, x11, x12)) 
+
+LT_postexclusion <- subset(LT_exclusionball.df, LT_exclusionball.df$LT_exclusion=="TRUE")%>% select(c(player_id, player, catch, LT_ballseconds))
+```
+
+## split data into pre and post exclusion
+
+
+##ball lead
+
+```{r}
+# we want to split the dataset LT_ball2.df  into pre and post exclusion ball throws
+#we can make two datasets
+# this split should occur per participant based on their time as recorded by -- LT_exclusions.df$LT_chatseconds
+#when LT_ball2.df $LT_ballseconds is less than or equal to LT_exclusions.df$LT_chatseconds for that player
+
+
+
+#making the throws 'lead' and removing every second row called "player catch"
+#new column called catch
+ballLT_wide$catch <- lead(ballLT_wide$player)
+LT_ballhigh.df <- subset(ballLT_wide, LT_balltype.df$catchthrow=="playerThrow")%>% select(c(player_id, player, catch, LT_ballseconds)) 
+
+#only participant 2 throws
+LT_ball2.df  <- subset(LT_ballhigh.df, player=="2") 
+
+#merge time of exclusion with all of player 2's throw
+LT_exclusionball.df <- merge(x=LT_ball2.df , y=LT_exclusions.df, by.x = "player_id")
+
+#true if post exclusion
+#false if pre exclusion message
+LT_exclusion<-with(LT_exclusionball.df,LT_exclusionball.df$LT_ballseconds<LT_chatseconds)
+
+LT_exclusionball.df  <- cbind(LT_exclusionball.df, LT_exclusion)  
+
+#two new datasets pre and post
+LT_preexclusion <- subset(LT_exclusionball.df, LT_exclusionball.df$LT_exclusion=="FALSE")%>% select(c(player_id, player, catch, LT_ballseconds)) 
+
+LT_postexclusion <- subset(LT_exclusionball.df, LT_exclusionball.df$LT_exclusion=="TRUE")%>% select(c(player_id, player, catch, LT_ballseconds))
+
+```
+
+##calculate pre exclusion proportions of throws
+```{r}
+
+# we participant throws to player 1 as proportion in the pre exclusion time period
+#and proportion in post exclusion time period
+
+
+#total participant throws pre exclusion
+LT_totalparticipantthrows_pre <- LT_preexclusion %>% count(player_id)
+names(LT_totalparticipantthrows_pre)[2]<-paste("total")
+
+
+#total participant throws post exclusion
+LT_totalparticipantthrows_post <- LT_postexclusion %>% count(player_id)
+names(LT_totalparticipantthrows_post)[2]<-paste("total")
+
+# count of throws before and after exclusion grouped by player
+LT_playerexclusion_pre <- LT_preexclusion %>% count(player_id, catch)
+LT_playerexclusion_post <- LT_postexclusion %>% count(player_id, catch)
+
+
+
+
+
+
+
+```
+##pre exclusion proportion p1
+```{r}
+
+#throws to player 1 PRE exclusion
+LT_player1pre<- subset(LT_playerexclusion_pre, LT_playerexclusion_pre$catch=="1") 
+
+#dataset with n(throws to player 1) pre exclusion and the total throw
+LT_p1_pre <- merge(x=LT_totalparticipantthrows_pre, y=LT_player1pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LT_p1_pre$pre <- LT_p1_pre$n/LT_p1_pre$total 
+
+########
+
+#throws to player 1 POST exclusion
+LT_player1post<- subset(LT_playerexclusion_post, LT_playerexclusion_post$catch=="1") 
+
+#dataset with n(throws to player 1) post exclusion and the total throw
+LT_p1_post <- merge(x = LT_totalparticipantthrows_post, y = LT_player1post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LT_p1_post$post <- LT_p1_post$n/LT_p1_post$total
+
+```
+
+###LT p1 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LT_p1_exclusion <- merge(x=LT_p1_pre, y=LT_p1_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LT_p1_exclusion_pivot <- pivot_longer(
+  LT_p1_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LT_p1_exclusion_full <- merge(x=LT_p1_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p3
+```{r}
+
+#throws to player 3 PRE exclusion
+LT_player3pre<- subset(LT_playerexclusion_pre, LT_playerexclusion_pre$catch=="3") 
+
+#dataset with n(throws to player 3) pre exclusion and the total throw
+LT_p3_pre <- merge(x=LT_totalparticipantthrows_pre, y=LT_player3pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LT_p3_pre$pre <- LT_p3_pre$n/LT_p3_pre$total 
+
+########
+
+#throws to player 3 POST exclusion
+LT_player3post<- subset(LT_playerexclusion_post, LT_playerexclusion_post$catch=="3") 
+
+#dataset with n(throws to player 3) post exclusion and the total throw
+LT_p3_post <- merge(x = LT_totalparticipantthrows_post, y = LT_player3post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LT_p3_post$post <- LT_p3_post$n/LT_p3_post$total
+
+```
+
+###LT p3 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LT_p3_exclusion <- merge(x=LT_p3_pre, y=LT_p3_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LT_p3_exclusion_pivot <- pivot_longer(
+  LT_p3_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LT_p3_exclusion_full <- merge(x=LT_p3_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+##pre exclusion proportion p4
+```{r}
+
+#throws to player 4 PRE exclusion
+LT_player4pre<- subset(LT_playerexclusion_pre, LT_playerexclusion_pre$catch=="4") 
+
+#dataset with n(throws to player 4) pre exclusion and the total throw
+LT_p4_pre <- merge(x=LT_totalparticipantthrows_pre, y=LT_player4pre, by.x = "player_id")
+
+#n column and divide it by the n in total
+LT_p4_pre$pre <- LT_p4_pre$n/LT_p4_pre$total 
+
+########
+
+#throws to player 4 POST exclusion
+LT_player4post<- subset(LT_playerexclusion_post, LT_playerexclusion_post$catch=="4") 
+
+#dataset with n(throws to player 4) post exclusion and the total throw
+LT_p4_post <- merge(x = LT_totalparticipantthrows_post, y = LT_player4post, by = "player_id")  
+
+#n column and divide it by the n in total, keep id column
+LT_p4_post$post <- LT_p4_post$n/LT_p4_post$total
+
+```
+
+###LT p4 into a full dataset
+```{r}
+
+
+#joining the pre and post exclusion proportion in one dataframe
+LT_p4_exclusion <- merge(x=LT_p4_pre, y=LT_p4_post, by = "player_id") %>% select(player_id, pre, post) %>% rename(prolific_id = player_id)
+
+
+# pivot longer
+LT_p4_exclusion_pivot <- pivot_longer(
+  LT_p4_exclusion, 2:3,
+  names_to = "time",
+  values_to = "prop")
+
+#merging proportion with context and status variables from qualtrics
+LT_p4_exclusion_full <- merge(x=LT_p4_exclusion_pivot, y=trialdata1, by = "prolific_id") %>% select(prolific_id, time, prop, context, status)
+
+
+
+
+```
+
+#t-test LT
+```{r}
+# library(lsr)
+# #player 1
+# LT_t.testp1 <- cbind(LT_preproportionp1, LT_postproportionp1)
+# LT_t.testp1 <- data.frame(LT_t.testp1)
+# pairedSamplesTTest(
+#      ~ LT_preproportionp1 + LT_postproportionp1, LT_t.testp1)
+# 
+# 
+# #player 3
+# LT_t.testp3 <- cbind(LT_preproportionp3, LT_postproportionp3)
+# LT_t.testp3 <- data.frame(LT_t.testp3)
+# pairedSamplesTTest(
+#      ~ LT_preproportionp3 + LT_postproportionp3, LT_t.testp3)
+# 
+# 
+# 
+# #player 4
+# LT_t.testp4 <- cbind(LT_preproportionp4, LT_postproportionp4)
+# LT_t.testp4 <- data.frame(LT_t.testp4)
+# pairedSamplesTTest(
+#      ~ LT_preproportionp4 + LT_postproportionp4, LT_t.testp4)
+
+```
+
+#dummy coding
+
+
+```{r}
+
+
+#excluder proportions across conditions
+excluder_all.df<- rbind(HS_p1_exclusion_full, HT_p1_exclusion_full, MS_p3_exclusion_full, MT_p3_exclusion_full, LS_p4_exclusion_full, LT_p4_exclusion_full)
+
+#victim proportions across conditions
+victim_all.df<- rbind(HS_p3_exclusion_full, HT_p3_exclusion_full, MS_p4_exclusion_full, MT_p4_exclusion_full, LS_p3_exclusion_full, LT_p3_exclusion_full)
+
+# need to create numeric codes. Level 1 predictor must be numeric or the model can't estimate its fixed effect properly
+
+#     x1status = +1 HS, 0 C, -1 LS
+
+excluder_all.df <- mutate(excluder_all.df, x1status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "-1", "0")))
+
+
+victim_all.df <- mutate(victim_all.df, x1status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "-1", "0")))
+
+#     x2status = +1 HS, -2 C, +1 LS
+excluder_all.df <- mutate(excluder_all.df, x2status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "1", "-2")))
+
+
+victim_all.df <- mutate(victim_all.df, x2status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "1", "-2")))
+
+
+#    x3type = +1 Task, -1 Social
+
+excluder_all.df <- mutate(excluder_all.df, x3context =
+              ifelse(context == "task", "1", "-1"))
+
+
+victim_all.df <- mutate(victim_all.df, x3context =
+              ifelse(context == "task", "1", "-1"))
+
+
+#    time = +1 Post, -1 Pre
+
+excluder_all.df <- mutate(excluder_all.df, xtime =
+              ifelse(time == "post", "1", "-1"))
+
+victim_all.df <- mutate(victim_all.df, xtime =
+              ifelse(time == "post", "1", "-1"))
+
+#making numeric
+excluder_all.df$xtime <- as.numeric(excluder_all.df$xtime)
+victim_all.df$xtime <- as.numeric(victim_all.df$xtime)
+
+excluder_all.df$x1status <- as.numeric(excluder_all.df$x1status)
+victim_all.df$x1status <- as.numeric(victim_all.df$x1status)
+
+excluder_all.df$x2status <- as.numeric(excluder_all.df$x2status)
+victim_all.df$x2status <- as.numeric(victim_all.df$x2status)
+
+excluder_all.df$x3context<- as.numeric(excluder_all.df$x3context)
+victim_all.df$x3context <- as.numeric(victim_all.df$x3context)
+
+```
+
+# dataset with excluder and victim
+```{r}
+
+victim_all.df <- victim_all.df %>% 
+  mutate("player" = 1)
+
+
+excluder_all.df <- excluder_all.df %>% 
+  mutate("player" = -1)
+
+```
+
+#Model Mixed
+```{r}
+
+#optimizer 
+control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5))
+
+
+#null model (model only contains random intercept)
+#predicting exclusion prop from the random intercept
+modelnull <- lmer(prop ~  ( 1 | prolific_id), data = victim_all.df)
+summary(modelnull)
+
+#random effect output - variance is near zero which is bad? for mlm
+
+#ICC calc = btw person intercept variance/total variance (sum of both variance components)
+#ICC 
+0.005569/(0.005569+0.018101)
+#=0.2352767
+# This means 23.55% of variance is between and 76.5% is within
+
+
+
+
+
+
+# models
+victim_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
+summary(victim_modelexclusion)
+anova(victim_modelexclusion)
+
+excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_modelexclusion)
+anova(excluder_modelexclusion)
+
+
+#The estimate for the intercept in fixed effect is 0.368 and that is the mean proportion of throws to victim for the reference group
+#0.01507 for excluder
+
+
+install.packages("emmeans")
+ library(emmeans)
+
+emmeans(excluder_modelexclusion, list(pairwise ~ x3context), adjust = "tukey")
+emmeans(excluder_modelexclusion, list(pairwise ~ xtime), adjust = "tukey")
+
+
+ #emmeans(excluder_modelexclusion, specs = )
+
+#deciding which random slope to include (this doesn't really matter as i think we need to take the maximal approach)
+full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
+reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = victim_all.df)
+anova(full_random_slope_model, reduced_random_int_model)
+#here it is sig
+
+exc_full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
+exc_reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = excluder_all.df)
+anova(exc_full_random_slope_model, exc_reduced_random_int_model)
+###here it is sig
+
+```
+
+######assumptions
+```{r}
+install.packages("sjPlot")
+library(sjPlot)
+install.packages( 'glmmTMB')
+library(glmmTMB)
+
+
+#linearity of relationships
+# we have dichotomous predictors as we cant have non linear
+
+
+
+
+
+#independence of observations - look at clumping in plot in the data points
+exc_linearity_model <-plot_model(excluder_modelexclusion, type="resid", show.data = TRUE, show.loess = FALSE)
+exc_linearity_model
+
+vic_linearity_model <-plot_model(victim_modelexclusion, type="resid", show.data = TRUE, show.loess = FALSE)
+vic_linearity_model
+
+
+
+
+
+
+
+exc_modeldiagnostics <- plot_model(excluder_modelexclusion, type = "diag")
+vic_modeldiagnostics <- plot_model(victim_modelexclusion, type = "diag")
+
+exc_modeldiagnostics[[1]]
+exc_modeldiagnostics[[2]]
+#this one potench weird
+exc_modeldiagnostics[[3]]
+exc_modeldiagnostics[[4]]
+
+vic_modeldiagnostics[[1]]
+vic_modeldiagnostics[[2]]
+vic_modeldiagnostics[[3]]
+vic_modeldiagnostics[[4]]
+
+
+
+
+
+#check for normality of residuals
+qqnorm(resid(excluder_modelexclusion))
+qqnorm(resid(victim_modelexclusion))
+
+hist(resid(excluder_modelexclusion))
+hist(resid(victim_modelexclusion))
+
+plot(fitted(excluder_modelexclusion),residuals(excluder_modelexclusion))
+plot(fitted(victim_modelexclusion),residuals(victim_modelexclusion))
+
+#check for homogeneity of variance
+plot(excluder_modelexclusion)
+plot(victim_modelexclusion)
+
+```
+
+#sig int term
+```{r}
+#sig int term are xtime:x1status:x3context victim    ... excluder x1status:x3context
+
+
+
+sim_slopes(excluder_modelexclusion,
+           pred = x1status,
+            modx = x3context )
+
+sim_slopes(victim_modelexclusion,
+           pred = x1status, xtime,
+            modx = x3context )
+
+
+#plotting all interactions
+context_int <- plot_model(victim_modelexclusion, type = "int")
+context_int
+
+int <- plot_model(excluder_modelexclusion, type = "int")
+int
+
+
+##kinda a repeat of interations
+interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
+interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
+
+# three way int? 
+interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context)
+
+```
+
+
+###equations
+
+```{r}
+
+#install.packages("equatiomatic")
+library(equatiomatic)
+
+extract_eq(excluder_modelexclusion)
+extract_eq(victim_modelexclusion)
+
+
+```
+
+
+######means
+
+```{r}
+
+#HS
+#excluder
+mean(HS_p1_pre$pre)
+sd(HS_p1_pre$pre)
+
+mean(HS_p1_post$post)
+sd(HS_p1_post$post)
+
+
+
+#HT
+#excluder
+
+mean(HT_p1_pre$pre)
+sd(HT_p1_pre$pre)
+mean(HT_p1_post$post)
+sd(HT_p1_post$post)
+
+
+
+
+
+#MS
+#MSexcluder
+mean(MS_p1_pre$pre)
+sd(MS_p1_pre$pre)
+mean(MS_p1_post$post)
+sd(MS_p1_post$post)
+
+
+
+
+
+#MT
+#excluder
+mean(MT_p1_pre$pre)
+sd(MT_p1_pre$pre)
+mean(MT_p1_post$post)
+sd(MT_p1_post$post)
+
+
+
+
+
+#LS
+#excluder
+mean(LS_p1_pre$pre)
+sd(LS_p1_pre$pre)
+mean(LS_p1_post$post)
+sd(LS_p1_post$post)
+
+
+
+
+#LT
+#excluder
+mean(LT_p1_pre$pre)
+sd(LT_p1_pre$pre)
+mean(LT_p1_post$post)
+sd(LT_p1_post$post)
+
+
+means_sd <- list(HS_p1_pre$pre,HS_p1_post$post, HS_p3_pre$pre,HS_p3_post$post) %>% reduce(left_join, by="player_id")
+
+
+
+
+
+##########3
+
+
+
+# HTvictim
+mean(HT_p3_pre$pre)
+sd(HT_p3_pre$pre)
+mean(HT_p3_post$post)
+sd(HT_p3_post$post)
+
+#HS victim
+mean(HS_p3_pre$pre)
+sd(HS_p3_pre$pre)
+mean(HS_p3_post$post)
+sd(HS_p3_pre$pre)
+
+
+#MTvictim
+mean(MT_p3_pre$pre)
+sd(MT_p3_pre$pre)
+mean(MT_p3_post$post)
+sd(MT_p3_post$post)
+
+#MSvictim
+mean(MS_p3_pre$pre)
+sd(MS_p3_pre$pre)
+mean(MS_p3_post$post)
+sd(MS_p3_post$post)
+
+
+#LTvictim
+mean(LT_p3_pre$pre)
+sd(LT_p3_pre$pre)
+mean(LT_p3_post$post)
+sd(LT_p3_post$post)
+
+
+#LSvictim
+mean(LS_p3_pre$pre)
+sd(LS_p3_pre$pre)
+mean(LS_p3_post$post)
+sd(LS_p3_post$post)
+```
+
+
+
+
+###table
+
+```{r}
+
+
+
+tab_model(excluder_modelexclusion, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", dv.labels = c("exclusion")  , file = "exc_model.html")
+          
+tab_model(victim_modelexclusion, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", dv.labels = c("exclusion")  , file = "vic_model.html")
+
+##can get them next to eachother
+excluder_victim_results_table <- tab_model(excluder_modelexclusion, victim_modelexclusion, dv.labels = c("excluder", "victim"), show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", file = "vic_exc_model.html")
+```
+
+#### plots
+```{r}
+
+#plot
+excluder_plot <- plot_model(excluder_modelexclusion, type = "pred", terms = "xtime", title = "", axis.title = c("status", "exclusion"), show.data = TRUE, dot.size = 0.8, jitter = 0.2, ci.lvl = 0.95) + apatheme
+
+victim_plot <- plot_model(victim_modelexclusion, type = "pred", terms = "xtime", title = "", axis.title = c("status", "exclusion"), show.data = TRUE, dot.size = 0.8, jitter = 0.2, ci.lvl = 0.95) + apatheme
+
+
+
+
+
+
+
+
+boxplot(prop ~ xtime * (x1status + x2status) * x3context, col=c("white","lightgray"),excluder_all.df)
+
+
+
+#sjp.lmer(excluder_all.df, type = "re.qq")
+
+
+
+ggplot(excluder_all.df,aes(x=status, y=prop, fill=context)) + 
+  facet_grid(~time) +
+    geom_bar(stat="identity") + 
+    geom_line(size=0.8) +
+    geom_point(alpha = 0.3) + 
+    geom_hline(yintercept=0, linetype="dashed") +
+    theme_bw()
+
+ggplot(victim_all.df,aes(x=status, y=prop, group=interaction(context, status))) + 
+ geom_bar(stat="identity") + 
+  facet_grid(~context) +
+    geom_line(size=0.8) +
+    geom_point(alpha = 0.3) + 
+    geom_hline(yintercept=0, linetype="dashed") +
+    theme_bw()
+```
+
+
+#qualtrics aligned mcq
+###norm scale
+```{r}
+
+#taken trial data and aligned columns
+#read in
+
+qualtricsMCQ <- read_excel("/Users/sarahreichman/Desktop/Thesis/FullQualtricsAlignedMCQ.xlsx")
+
+
+
+
+#reliability norm violation scale
+
+norm_violation.sc <- qualtricsMCQ[,9:12] 
+norm_violation.alpha <- psych::alpha(norm_violation.sc, check.keys = TRUE)
+
+```
+
+#representative and identification
+```{r}
+
+#combine Qualtrics n Cyberball
+QualtricsCyberball.df <- merge(qualtricsMCQ, victim_all.df, by = "prolific_id")
+
+#representative excluder
+representative_excluder.lm <- lm(representative ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
+summary(representative_excluder.lm)
+anova(representative_excluder.lm)
+###sig w x1status x2 status and context (no int)
+
+#identification exc
+identification_excluder.lm <- lm(identification ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
+summary(identification_excluder.lm)
+anova(identification_excluder.lm)
+#non sig 
+#because they lack empathy “Player 1 identifies with other members of this group”
+
+
+##########
+
+
+#own need excluder
+own_need_excluder.lm <- lm(own_need ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
+summary(own_need_excluder.lm)
+anova(own_need_excluder.lm)
+
+# sig x1status, x3context and x1status:x3context  
+
+
+
+
+
+
+#other need excluder
+other_need_excluder.lm <- lm(other_need ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
+summary(other_need_excluder.lm)
+anova(other_need_excluder.lm)
+# sig x3context  
+
+
+#table cor
+apa.cor.table(other_need_excluder.lm,filename = "Example3.doc",table.number = 3,show.conf.interval = F)
+####dont understand output of means? Theyre neg
+
+
+```
+
+#Suspicion to excel 
+##HT
+```{r}
+ install.packages("writexl")
+ library(writexl)
+
+
+
+HT_sender.df <- filter(HT_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+HT_sender.df <- cbind(HT_chattext.df, HT_chatseconds, HT_sender.df)
+
+#selecting columns
+HT_sender.df <- HT_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+HT_sender_na.df <- HT_sender.df[!complete.cases(HT_sender.df), ]
+
+
+
+
+```
+
+## HS
+```{r}
+# install.packages("writexl")
+# library(writexl)
+
+
+
+HS_sender.df <- filter(HS_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+HS_sender.df <- cbind(HS_chattext.df, HS_chatseconds, HS_sender.df)
+
+#selecting columns
+HS_sender.df <- HS_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+HS_sender_na.df <- HS_sender.df[!complete.cases(HS_sender.df), ]
+
+```
+## MT
+```{r}
+# install.packages("writexl")
+# library(writexl)
+
+
+
+MT_sender.df <- filter(MT_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+MT_sender.df <- cbind(MT_chattext.df, MT_chatseconds, MT_sender.df)
+
+#selecting columns
+MT_sender.df <- MT_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+MT_sender_na.df <- MT_sender.df[!complete.cases(MT_sender.df), ]
+
+
+```
+
+
+## MS
+```{r}
+# install.packages("writexl")
+# library(writexl)
+
+
+
+MS_sender.df <- filter(MS_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+MS_sender.df <- cbind(MS_chattext.df, MS_chatseconds, MS_sender.df)
+
+#selecting columns
+MS_sender.df <- MS_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+MS_sender_na.df <- MS_sender.df[!complete.cases(MS_sender.df), ]
+
+
+```
+
+## LT
+```{r}
+# install.packages("writexl")
+# library(writexl)
+
+
+
+LT_sender.df <- filter(LT_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+LT_sender.df <- cbind(LT_chattext.df, LT_chatseconds, LT_sender.df)
+
+#selecting columns
+LT_sender.df <- LT_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+LT_sender_na.df <- LT_sender.df[!complete.cases(LT_sender.df), ]
+
+
+
+
+```
+
+
+## LS
+```{r}
+# install.packages("writexl")
+# library(writexl)
+
+
+
+LS_sender.df <- filter(LS_chat.df, substr(x4,1,6)=="sender") %>% 
+   rename(sender=value)
+
+LS_sender.df <- cbind(LS_chattext.df, LS_chatseconds, LS_sender.df)
+
+#selecting columns
+LS_sender.df <- LS_sender.df %>%
+  select(c(1, 13, 14, 27)) 
+#only want participant replys (so it is na in column 28)
+LS_sender_na.df <- LS_sender.df[!complete.cases(LS_sender.df), ]
+
+
+
+```
+#write full for suspicion checking
+```{r}
+write_xlsx(HT_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\HT_chat_bot_suss_full.xlsx")
+
+write_xlsx(HT_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\HT_chat_bot_suss_participant.xlsx")
+write_xlsx(HS_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\HS_chat_bot_suss_full.xlsx")
+
+write_xlsx(HS_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\HS_chat_bot_suss_participant.xlsx")
+
+write_xlsx(MT_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\MT_chat_bot_suss_full.xlsx")
+
+write_xlsx(MT_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\MT_chat_bot_suss_participant.xlsx")
+
+
+write_xlsx(MS_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\MS_chat_bot_suss_full.xlsx")
+
+write_xlsx(MS_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\MS_chat_bot_suss_participant.xlsx")
+
+
+write_xlsx(LT_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\LT_chat_bot_suss_full.xlsx")
+
+write_xlsx(LT_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\LT_chat_bot_suss_participant.xlsx")
+
+
+write_xlsx(LS_sender.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\LS_chat_bot_suss_full.xlsx")
+
+write_xlsx(LS_sender_na.df,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\LS_chat_bot_suss_participant.xlsx")
+
+
+```
+
+
+
+###CSV for word cloud
+```{r}
+#HT
+HT_chat_post_ex <- merge(x=HT_sender_na.df, y=HT_postexclusion, by = "player_id")
+HT_chat_post_ex <- subset(HT_chat_post_ex, HT_chatseconds < HT_ballseconds) %>% select(c(1,2,3))
+HT_chat_post_ex <- HT_chat_post_ex[!duplicated(HT_chat_post_ex$text), ] %>% select(text)
+write_csv(HT_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/HT_chat_post_ex.csv")
+
+
+#HS
+
+HS_chat_post_ex <- merge(x=HS_sender_na.df, y=HS_postexclusion, by = "player_id")
+HS_chat_post_ex <- subset(HS_chat_post_ex, HS_chatseconds < HS_ballseconds) %>% select(c(1,2,3))
+HS_chat_post_ex <- HS_chat_post_ex[!duplicated(HS_chat_post_ex$text), ] %>% select(text)
+write_csv(HS_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/HS_chat_post_ex.csv")
+
+#MT
+
+MT_chat_post_ex <- merge(x=MT_sender_na.df, y=MT_postexclusion, by = "player_id")
+MT_chat_post_ex <- subset(MT_chat_post_ex, MT_chatseconds < MT_ballseconds) %>% select(c(1,2,3))
+MT_chat_post_ex <- MT_chat_post_ex[!duplicated(MT_chat_post_ex$text), ] %>% select(text)
+write_csv(MT_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/MT_chat_post_ex.csv")
+
+#MS
+MS_chat_post_ex <- merge(x=MS_sender_na.df, y=MS_postexclusion, by = "player_id")
+MS_chat_post_ex <- subset(MS_chat_post_ex, MS_chatseconds < MS_ballseconds) %>% select(c(1,2,3))
+MS_chat_post_ex <- MS_chat_post_ex[!duplicated(MS_chat_post_ex$text), ] %>% select(text)
+write_csv(MS_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/MS_chat_post_ex.csv")
+
+#LT
+
+LT_chat_post_ex <- merge(x=LT_sender_na.df, y=LT_postexclusion, by = "player_id")
+LT_chat_post_ex <- subset(LT_chat_post_ex, LT_chatseconds < LT_ballseconds) %>% select(c(1,2,3))
+LT_chat_post_ex <- LT_chat_post_ex[!duplicated(LT_chat_post_ex$text), ] %>% select(text)
+write_csv(LT_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/LT_chat_post_ex.csv")
+
+#LS
+
+LS_chat_post_ex <- merge(x=LS_sender_na.df, y=LS_postexclusion, by = "player_id")
+LS_chat_post_ex <- subset(LS_chat_post_ex, LS_chatseconds < LS_ballseconds) %>% select(c(1,2,3))
+LS_chat_post_ex <- LS_chat_post_ex[!duplicated(LS_chat_post_ex$text), ] %>% select(text)
+write_csv(LS_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/LS_chat_post_ex.csv")
+
+
+# #HS
+# text_HS_sender_na.df<- HS_sender_na.df %>% select(text)
+# text_HS_sender_na.df <-na.omit(text_HS_sender_na.df)
+# write_csv(text_HS_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_HS_chat_bot.csv")
+# 
+# 
+# #MT
+# text_MT_sender_na.df<- MT_sender_na.df %>% select(text)
+# text_MT_sender_na.df <-na.omit(text_MT_sender_na.df)
+# write_csv(text_MT_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_MT_chat_bot.csv")
+# 
+# #MS
+# text_MS_sender_na.df<- MS_sender_na.df %>% select(text)
+# text_MS_sender_na.df <-na.omit(text_MS_sender_na.df)
+# write_csv(text_MS_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_MS_chat_bot.csv")
+# 
+# 
+# #LT
+# text_LT_sender_na.df<- LT_sender_na.df %>% select(text)
+# text_LT_sender_na.df <-na.omit(text_LT_sender_na.df)
+# write_csv(text_LT_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_LT_chat_bot.csv")
+# 
+# #LS
+# text_LS_sender_na.df<- LS_sender_na.df %>% select(text)
+# text_LS_sender_na.df <-na.omit(text_LS_sender_na.df)
+# write_csv(text_LS_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_LS_chat_bot.csv")
+```
+
+ 
