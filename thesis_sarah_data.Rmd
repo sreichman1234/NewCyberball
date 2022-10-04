@@ -343,8 +343,22 @@ low_DQS <- filter(trialdata1, dqs_q1 < 5 | dqs_q2 < 5  | dqs_q3 > 5  | dqs_q5 > 
 trialdata1 <- filter(trialdata1, prolific_id %notin% low_DQS$prolific_id)
 view(trialdata1)
 
-<<<<<<< HEAD
+
+#poor data q 
+
+  
+  
+sum(is.na(as.numeric(low_DQS$effort_check)))
+#156 participants with na - but do they even have cyberball??
+# 
+# 
+# poor data 35 ppl
+
+
+# in cyberball data is 469 ppl
+
 ```
+
 
 #prolificdemog
 
@@ -576,21 +590,6 @@ sd(as.numeric(trialdata1$age))
 ```
 
 
-#poor data q 
-
-```{r} 
-  
-  
-sum(is.na(as.numeric(low_DQS$effort_check)))
-#156 participants with na - but do they even have cyberball??
-# 
-# 
-# poor data 35 ppl
-
-
-# in cyberball data is 469 ppl
-
-```
 
 #part 1 HS
 
@@ -2604,7 +2603,7 @@ excluder_all.df<- rbind(HS_p1_exclusion_full, HT_p1_exclusion_full, MS_p3_exclus
 #victim proportions across conditions
 victim_all.df<- rbind(HS_p3_exclusion_full, HT_p3_exclusion_full, MS_p4_exclusion_full, MT_p4_exclusion_full, LS_p3_exclusion_full, LT_p3_exclusion_full) %>% mutate(player=2)
 
-#bystanderproportions across conditions
+#bystander proportions across conditions
 
 bystander_all.df<- rbind(HS_p4_exclusion_full, HT_p4_exclusion_full, MS_p1_exclusion_full, MT_p1_exclusion_full, LS_p1_exclusion_full, LT_p1_exclusion_full)%>% mutate(player=3)
 
@@ -2956,7 +2955,7 @@ sd(LT_p1_post$post)
 
 
 
-##########3
+##########
 
 
 
@@ -3120,12 +3119,80 @@ anova(other_need_excluder.lm)
 
 
 #table cor
-apa.cor.table(representative_excluder.lm,filename = "Representative.doc",table.number = 3,show.conf.interval = F)
-apa.cor.table(identification_excluder.lm,filename = "Identification.doc",table.number = 3,show.conf.interval = F)
-apa.cor.table(own_need_excluder.lm,filename = "OwnNeed.doc",table.number = 3,show.conf.interval = F)
-apa.cor.table(other_need_excluder.lm,filename = "OtherNeed.doc",table.number = 3,show.conf.interval = F)
+# apa.cor.table(representative_excluder.lm,filename = "Representative.doc",table.number = 3,show.conf.interval = F)
+# apa.cor.table(identification_excluder.lm,filename = "Identification.doc",table.number = 3,show.conf.interval = F)
+# apa.cor.table(own_need_excluder.lm,filename = "OwnNeed.doc",table.number = 3,show.conf.interval = F)
+# apa.cor.table(other_need_excluder.lm,filename = "OtherNeed.doc",table.number = 3,show.conf.interval = F)
 ####dont understand output of means? Theyre neg
 
+```
+
+
+#making scales
+
+```{r}
+iden_vars <- c("representative","identification")
+self_other_vars <- c("own_need","other_need")
+norm_vars <- c("wrong","improper", "poorly", "inappropriate" )
+rel_task_vars <- c("rel_tension","task_tension")
+
+
+qualtricsMCQ$representative <- as.numeric(qualtricsMCQ$representative)
+qualtricsMCQ$identification <- as.numeric(qualtricsMCQ$identification)
+qualtricsMCQ$own_need <- as.numeric(qualtricsMCQ$own_need)
+qualtricsMCQ$other_need <- as.numeric(qualtricsMCQ$other_need)
+
+
+qualtricsMCQ <- qualtricsMCQ %>% 
+  mutate(sc_iden = rowMeans(qualtricsMCQ[ ,iden_vars], na.rm = TRUE),
+         sc_self_other= rowMeans(qualtricsMCQ[ ,self_other_vars], na.rm = TRUE),
+         sc_norm = rowMeans(qualtricsMCQ[ ,norm_vars], na.rm = TRUE),
+         sc_rel_task = rowMeans(qualtricsMCQ[ ,rel_task_vars], na.rm = TRUE))
+
+#adding status from the other dataset
+#no full data has dummy coded status so im doing it now
+new_data <- mutate(trialdata1, x1status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "-1", "0")))
+
+#making x1status numeric
+new_data$x1status <- as.numeric(new_data$x1status)
+
+#merging x1status and qualtrics
+qualtricsMCQ <- merge(qualtricsMCQ, new_data, by = "prolific_id")
+
+#corr with the four scales and x1 status
+corrdata <- qualtricsMCQ %>%
+  select(sc_iden, sc_self_other, sc_norm, sc_rel_task, x1status) 
+
+corr <- round(cor(corrdata), 2)
+head(corr[, 1:6])
+
+#produce p-values matrix and check header (commented out)
+p.mat <- cor_pmat(corrdata)
+
+install.packages("ggcorrplot")
+library(ggcorrplot)
+
+#visualise matrix 
+#I set this up as an external file to be able to control the image width
+png(filename = "status_intercorrs.png",
+    width = 12, height = 12, units = "in", pointsize = 9,
+     bg = "transparent", res = 150)
+
+ggcorrplot(corr, method = "circle", type = "upper",
+     p.mat = p.mat, lab = TRUE, insig = "blank")
+
+
+# this didnt work  === dev.off()
+while (!is.null(dev.list()))  dev.off()
+
+##cant find the file
+include_graphics("status_intercorrs.png")
+
+#my apa table
+
+apa.cor.table(corr)
 
 ```
 
