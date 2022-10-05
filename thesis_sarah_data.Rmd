@@ -2705,8 +2705,8 @@ excluder_all.df <- excluder_all.df %>%
 
 # dataset with excluder and victim and bystander
 ```{r}
-
-all_players_data <- rbind(excluder_all.df, victim_all.df, bystander_all.df)
+#not working bc diff length
+all_players_data <- cbind(excluder_all.df, victim_all.df, bystander_all.df)
 
 ```
 
@@ -3058,72 +3058,13 @@ ggplot(victim_all.df,aes(x=status, y=prop, group=interaction(context, status))) 
 
 
 #qualtrics aligned mcq
-###norm scale
+
 ```{r}
 
-#taken trial data and aligned columns
+#taken trial data 1 and aligned columns in excel
 #read in
 
 qualtricsMCQ <- read_excel("/Users/sarahreichman/Desktop/Thesis/FullQualtricsAlignedMCQ.xlsx")
-
-
-
-
-#reliability norm violation scale
-
-norm_violation.sc <- qualtricsMCQ[,9:12] 
-norm_violation.alpha <- psych::alpha(norm_violation.sc, check.keys = TRUE)
-
-```
-
-#representative and identification
-```{r}
-
-#combine Qualtrics n Cyberball
-QualtricsCyberball.df <- merge(qualtricsMCQ, victim_all.df, by = "prolific_id")
-
-#representative excluder
-representative_excluder.lm <- lm(representative ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
-summary(representative_excluder.lm)
-anova(representative_excluder.lm)
-###sig w x1status x2 status and context (no int)
-
-#identification exc
-identification_excluder.lm <- lm(identification ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
-summary(identification_excluder.lm)
-anova(identification_excluder.lm)
-#non sig 
-#because they lack empathy “Player 1 identifies with other members of this group”
-
-
-##########
-
-
-#own need excluder
-own_need_excluder.lm <- lm(own_need ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
-summary(own_need_excluder.lm)
-anova(own_need_excluder.lm)
-
-# sig x1status, x3context and x1status:x3context  
-
-
-
-
-
-
-#other need excluder
-other_need_excluder.lm <- lm(other_need ~  (x1status + x2status) * x3context , data = QualtricsCyberball.df)
-summary(other_need_excluder.lm)
-anova(other_need_excluder.lm)
-# sig x3context  
-
-
-#table cor
-# apa.cor.table(representative_excluder.lm,filename = "Representative.doc",table.number = 3,show.conf.interval = F)
-# apa.cor.table(identification_excluder.lm,filename = "Identification.doc",table.number = 3,show.conf.interval = F)
-# apa.cor.table(own_need_excluder.lm,filename = "OwnNeed.doc",table.number = 3,show.conf.interval = F)
-# apa.cor.table(other_need_excluder.lm,filename = "OtherNeed.doc",table.number = 3,show.conf.interval = F)
-####dont understand output of means? Theyre neg
 
 ```
 
@@ -3148,53 +3089,128 @@ qualtricsMCQ <- qualtricsMCQ %>%
          sc_self_other= rowMeans(qualtricsMCQ[ ,self_other_vars], na.rm = TRUE),
          sc_norm = rowMeans(qualtricsMCQ[ ,norm_vars], na.rm = TRUE),
          sc_rel_task = rowMeans(qualtricsMCQ[ ,rel_task_vars], na.rm = TRUE))
+```
 
+###norm scale
+```{r}
+
+
+#norm violation scale
+norm_violation.sc <- qualtricsMCQ[,9:12] 
+##reliability 
+norm_violation.alpha <- psych::alpha(norm_violation.sc, check.keys = TRUE)
+
+```
+
+
+#adding contrast coded variables to the Qualtrics
+```{r}
 #adding status from the other dataset
-#no full data has dummy coded status so im doing it now
-new_data <- mutate(trialdata1, x1status =
+#no full data has dummy coded status or context so im doing it now
+#       x1status
+qualtricsMCQ <- mutate(qualtricsMCQ, x1status =
               ifelse(status == "high", "1",
               ifelse(status == "low", "-1", "0")))
 
-#making x1status numeric
-new_data$x1status <- as.numeric(new_data$x1status)
+#     x2status = +1 HS, -2 C, +1 LS
+qualtricsMCQ <- mutate(qualtricsMCQ, x2status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "1", "-2")))
 
-#merging x1status and qualtrics
-qualtricsMCQ <- merge(qualtricsMCQ, new_data, by = "prolific_id")
+#    x3type = +1 Task, -1 Social
+qualtricsMCQ <- mutate(qualtricsMCQ, x3context =
+                              ifelse(context == "task", "1", "-1"))
+#making numeric
+qualtricsMCQ$x3context <- as.numeric(qualtricsMCQ$x3context)
+qualtricsMCQ$x1status <- as.numeric(qualtricsMCQ$x1status)
+qualtricsMCQ$x2status <- as.numeric(qualtricsMCQ$x2status)
 
+
+
+
+```
+#correlation
+```{r}
 #corr with the four scales and x1 status
 corrdata <- qualtricsMCQ %>%
-  select(sc_iden, sc_self_other, sc_norm, sc_rel_task, x1status) 
+  select(sc_iden, sc_self_other, sc_norm, sc_rel_task, x1status, x3context)
+           
+task_corrdata <- subset(corrdata, corrdata$x3context=="1")
 
-corr <- round(cor(corrdata), 2)
-head(corr[, 1:6])
+social_corrdata <- subset(corrdata, corrdata$x3context=="-1")
 
-#produce p-values matrix and check header (commented out)
-p.mat <- cor_pmat(corrdata)
-
-install.packages("ggcorrplot")
-library(ggcorrplot)
+# task_corr <- round(cor(task_corrdata), 2)
+# head(task_corr[, 1:6])
+# 
+# #produce p-values matrix and check header (commented out)
+# p.mat <- cor_pmat(task_corrdata)
+# 
+# install.packages("ggcorrplot")
+# library(ggcorrplot)
 
 #visualise matrix 
 #I set this up as an external file to be able to control the image width
-png(filename = "status_intercorrs.png",
-    width = 12, height = 12, units = "in", pointsize = 9,
-     bg = "transparent", res = 150)
+# png(filename = "status_intercorrs.png",
+#     width = 12, height = 12, units = "in", pointsize = 9,
+#      bg = "transparent", res = 150)
 
-ggcorrplot(corr, method = "circle", type = "upper",
+ggcorrplot(task_corr, method = "circle", type = "upper",
      p.mat = p.mat, lab = TRUE, insig = "blank")
 
 
-# this didnt work  === dev.off()
-while (!is.null(dev.list()))  dev.off()
+# this didnt work >> dev.off()
+# this does work >> while (!is.null(dev.list()))  dev.off()
 
 ##cant find the file
-include_graphics("status_intercorrs.png")
+#include_graphics("status_intercorrs.png")
 
-#my apa table
 
-apa.cor.table(corr)
+
+#Sarahs apa table  
+
+apa.cor.table(task_corrdata, filename = "task_corr_status.doc")
+apa.cor.table(social_corrdata, filename = "social_corr_status.doc")
 
 ```
+
+
+#5 ANOVA (sc_iden, sc_self_other, etc)
+```{r}
+
+
+#sc_iden
+sc_iden.lm <- lm(sc_iden ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_iden.lm)
+anova(sc_iden.lm)
+
+#own need excluder
+sc_self_other.lm <- lm(sc_self_other ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_self_other.lm)
+anova(sc_self_other.lm)
+
+#sc_norm
+sc_norm.lm <- lm(sc_norm ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_norm.lm)
+anova(sc_norm.lm)
+
+# rel_tension
+rel_tension.lm <- lm(rel_tension ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(rel_tension.lm)
+anova(rel_tension.lm)
+
+# task_tension
+task_tension.lm <- lm(task_tension ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(task_tension.lm)
+anova(task_tension.lm)
+
+```
+
+
+
+
+
+
+
 
 #Suspicion to excel 
 ##HT
