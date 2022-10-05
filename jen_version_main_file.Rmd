@@ -44,8 +44,10 @@ The effect of status on exclusion is moderated by context.
 - Manipulation checks: We tested the status manipulation in a pretest.
 
 Our measures include:
+
 Throwing behaviour:
-- The original dataset contains counts of throws along with matching timestamps and who threw it and to whom. From this, we derive 
+- The original dataset contains counts of throws along with matching timestamps and who threw it and to whom. From this, we derive **proportions** of throws to the victim (excluder), both before and after the exclusion request. Reduced proportion of throws to the victim following the request indicates compliance with the excluder.
+
 Perceptions of the group experience:
   - **Perceived conflict type**
     1.My team members experienced relationship tension that was not related to the activity
@@ -66,18 +68,20 @@ Perceptions of the excluder:
 In the inferential tests below, we use three contrast-coded predictors and their interactions.
 
 - **x1status** = +1 (high), -1 (low), 0 (control)
-- **x2status** = +1 
-- **x2cast** = +1 (cast 1), -1 (cast 2)
-- **x3convo** = +1 (task convo), -1 (social convo)
+- **x2status** = +1 (high, low), -2 (control)
+- **x3context** = +1 (task), -1 (social)
 
 ## Analysis Strategy
 
-### Testing H1
+- intercorrelations of scale vars and status within context
+- do condition vars predict scale vars?
+- 5 ANOVAs testing effects of condition on identification, motivation, norm violation, task conflict, relationship conflict
+- mixed model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
+  - later, we will include target as a within-Ss factor (H1, H2)
+- mixed model regressions (lmer) testing effects of 5 scale measures (ID, motivation, NV, task conflict, relationship conflict) on pre-post proportion of throws to victim, excluder 
+  - later, we will consider examining whether the scale measures _moderate_ or perhaps _mediate_ any relationships between our predictors and throwing behaviour.
 
-We test H1 as follows:  
-[From manuscript:]  
-__First__, we used chi-square analysis to analyze the extent to which the PL was nominated to lead the group in the subsequent task. To do this, we compared the number of nominations of the PL versus others in the group in each condition. 
-*Note, we are unable to test H1 in this study because we did not collect the nomination measure.* 
+
 
 
 ```{r setup, include=FALSE}
@@ -350,46 +354,6 @@ apatheme=theme_bw()+
 
 ###QUALTRICS
 
-#prolificdemog
-
-```{r}
-
-#Read in Prolific Demographics 
-
-ProlificDemog <- read.csv("/Users/sarahreichman/Desktop/Thesis/ProlificDemog.csv", stringsAsFactors=FALSE)
-
-#Select ID variable and Country
-ProlificDemog <- ProlificDemog %>%
-  select(Participant.id, Country.of.residence) %>% rename(prolific_id = Participant.id)
-
-#Combine your main qualtrics dataset with the prolific demogs
-country.df <- merge(trialdata1, ProlificDemog, by = "prolific_id")
-
-#counts of country variables
-summary(factor(country.df$Country.of.residence)) 
- 
-
-#total =529
-#canada
-(13/529)*100
-
-#ireland
-(2/529)*100
-
-#south africa
-(90/529)*100
-
-#uk
-(223/529)*100
-
-#us
-(201/529)*100
- 
-
-
-#missing 10 people lowkey...
-```
-
 
 # clean survey
 ```{r} 
@@ -466,6 +430,49 @@ summary(rel.aov)
 task.aov <- aov(task_tension ~ context, data = trialdata1)
 summary(task.aov)
 ```
+
+
+#prolificdemog
+
+```{r}
+
+#Read in Prolific Demographics 
+
+ProlificDemog <- read.csv("/Users/sarahreichman/Desktop/Thesis/ProlificDemog.csv", stringsAsFactors=FALSE)
+
+#Select ID variable and Country
+ProlificDemog <- ProlificDemog %>%
+  select(Participant.id, Country.of.residence) %>% rename(prolific_id = Participant.id)
+
+#Combine your main qualtrics dataset with the prolific demogs
+country.df <- merge(trialdata1, ProlificDemog, by = "prolific_id")
+
+#counts of country variables
+summary(factor(country.df$Country.of.residence)) 
+ 
+
+#total =529
+#canada
+(13/529)*100
+
+#ireland
+(2/529)*100
+
+#south africa
+(90/529)*100
+
+#uk
+(223/529)*100
+
+#us
+(201/529)*100
+ 
+
+
+#missing 10 people lowkey...
+```
+
+
 
 #boxplot suss check for task and social 
 ```{r}
