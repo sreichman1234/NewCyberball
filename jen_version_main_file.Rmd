@@ -17,49 +17,56 @@ This is study designed to follow up on review comments received on the rejected 
 We collected N = `r nrow(studydata)` observations from Prolific Academic. After checking for ineligible countries (n = `r (nrow(checkdata) - nrow(d))`), duplicate IP addresses (`r nrow(dupefdata)`), and questionable quality-check responses (`r nrow(racestop.df)`), we retained N = `r nrow(betterdata)` observations for analysis. Respondents included `r sum(betterdata$gender == 1)` male, `r sum(betterdata$gender == 2)` female, and `r sum(betterdata$gender == 3)` self-defining participants. The average age of the respondents was  `r mean(betterdata$age)`. Data were collected in early January 2022.
 
 
-Participants were randomly assigned to one cell of a 2 (follower conduct: deference vs neutral) X 2 (cast version: 1 vs 2) X 2 (conversation: task vs social) design, resulting in 8 conditions:
+Participants were randomly assigned to one cell of a 3 (status: high vs low vs control) X 2 (context: task vs social) between-subjects ANOVA. We collected data on the number of throws made to three different targets, creating a within-subjects target factor (target: excluder vs victim vs bystander); throws occurred both before and after an exclusion request, yielding a second within-subjects factor (time: pre vs post exclusion request). All together, this creates a mixed design with two between and two within-Ss factors.
 
-- Condition 1 - Cast 1, Task conversation, deference
-- Condition 2 - Cast 1, Task conversation, neutral
-- Condition 3 - Cast 1, Social conversation, deference
-- Condition 4 - Cast 1, Social conversation, neutral
-- Condition 5 - Cast 2, Task conversation, deference
-- Condition 6 - Cast 2, Task conversation, neutral
-- Condition 7 - Cast 2, Social conversation, deference
-- Condition 8 - Cast 2, Social conversation, neutral
+Conditions are designated in the dataset as follows: 
+- task_low
+- social_low
+- task_high
+- social_high
+- task_control
+- social_control
 
-Following our previous studies, we seek support for the following hypotheses (numbered hypotheses are taken from our most current manuscript). The goal of this study is to replicate the general pattern of Studies 1-3 in the existing paper, to provide evidence of the generality and robustness of our effects, and to test whether our findings extend to female potential leaders.
+We set out to test these hypotheses:
 
-  1. A potential leader is more likely to be judged “a leader” (e.g., through nomination to lead the group) when a follower shows extremely subtle, nonverbal deference toward him/her than when the follower shows no such deference.  
-  2. A potential leader is seen as having more leader qualities (i.e., power, likability, and competence) when a follower shows extremely subtle, nonverbal deference toward him/her than when the follower shows no such deference.  
-
-We also test an additional hypothesis unique to this study:
-
-  3. Deference-based judgments of the potential leader do not depend on the type of conversation or on the specific individual assigned to that role. (That is, no moderation by conversation or cast.)  
+Hypothesis 1: 
+Excluder status influences an individual’s decision of how to respond to the excluder’s request to ostracise another group member. 
+  1a) Participants comply with an exclusion request by a high status excluder but won’t cooperate with requests from a low status excluder. 
+  1b) Participants exclude a low status individual who attempts to exclude another group member.
+  
+Hypothesis 2: 
+The effect of status on exclusion is moderated by context.
+  2a) Observers comply more with an exclusion request in a task-oriented group than in a social context. 
 
 
 ## Measures
 
-Our measures include:
+- Manipulation checks: We tested the status manipulation in a pretest.
 
-- Manipulation checks: How much each target was **nodding** and **smiling**
-- Our original **power**, **likability**, **competence** measures
-- Three competence measures from Anderson & Kilduff, 2009
-  - **General competence** 
-    1. "skills and expertise that would allow him/her to perform well on the group task (e.g., creativity, analytical abilities)"
-    2. general intelligence
-    3. "leadership ability (i.e., the ability to coordinate group activities and motivate a group to pursue a common goal)"
-    4. verbal skills
-  - **Task competence**
-    1. dependable and self-disciplined 
-    2. conventional and uncreative (r)
-  - **Social competence**
-    1. extraverted and enthusiastic 
-    2. reserved and quiet (r)
-    
+Our measures include:
+Throwing behaviour:
+- The original dataset contains counts of throws along with matching timestamps and who threw it and to whom. From this, we derive 
+Perceptions of the group experience:
+  - **Perceived conflict type**
+    1.My team members experienced relationship tension that was not related to the activity
+    2. My team members had conflicting opinions about the activity we were doing
+Perceptions of the excluder:
+  - **Identification**
+    1. {excluder} is representative of this group
+    2. {excluder} identifies with this group
+  - **Self vs other concern (excluder motivation)**
+    1. {excluder} is concerned about their own needs and interests
+    2. {excluder} is concerned about the needs and interests of other group members
+  - **Norm violation** 
+    1. The way {excluder} behaved was wrong
+    2. ...inappropriate
+    3. ...improper
+    4. {excluder} acted poorly
+
 In the inferential tests below, we use three contrast-coded predictors and their interactions.
 
-- **x1cond** = +1 (deference), -1 (neutral)
+- **x1status** = +1 (high), -1 (low), 0 (control)
+- **x2status** = +1 
 - **x2cast** = +1 (cast 1), -1 (cast 2)
 - **x3convo** = +1 (task convo), -1 (social convo)
 
