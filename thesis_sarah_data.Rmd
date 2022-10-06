@@ -2868,7 +2868,7 @@ interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
 interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
 
 # three way int? 
-three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, file = "3wayint")
+three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 2, file = "3wayint")
 
 
 
@@ -3029,7 +3029,7 @@ means_prop_table <- nice_table(mean_prop)
 
 
 
-###table
+###table output mixed prop
 
 ```{r}
 
@@ -3108,8 +3108,8 @@ qualtricsMCQ$other_need <- as.numeric(qualtricsMCQ$other_need)
 #already num rel task
 
 # Reverse scores in the desired columns 
-#qualtricsMCQ$other_need_r <- 8 - qualtricsMCQ[ ,8]
-qualtricsMCQ$other_need_r <- 8 - qualtricsMCQ$other_need
+#qualtricsMCQ$other_need_r <- 6 - qualtricsMCQ[ ,8]
+qualtricsMCQ$other_need_r <- 6 - qualtricsMCQ$other_need
 
 iden_vars <- c("representative","identification")
 self_other_vars <- c("own_need","other_need_r")
@@ -3145,6 +3145,8 @@ self_other.sc <- qualtricsMCQ[ ,self_other_vars]
 ##reliability 
 self_other.alpha <- psych::alpha(self_other.sc, check.keys = TRUE)
 
+apa.cor.table(qualtricsMCQ[ ,self_other_vars], filename = "self_other_corr.doc")
+#.34 corr sig
 ##LOW RELIABILITY =0.5
 
 #rek_task scale
@@ -3315,14 +3317,18 @@ qualtricsMCQ <- mutate(qualtricsMCQ, rel_tension_md = rel_tension - mean(rel_ten
 qualtricsMCQ <- mutate(qualtricsMCQ, own_need_md = own_need - mean(own_need))
 qualtricsMCQ <- mutate(qualtricsMCQ, other_need_r_md = other_need_r - mean(other_need_r))
 
-new_excluder_all.df <- merge(qualtricsMCQ, excluder_all.df, by = "prolific_id")
+#need prop and xtime
+prop_exc <- excluder_all.df %>% select(prolific_id, prop, xtime)
+
+
+new_excluder_all.df <- merge(qualtricsMCQ, prop_exc, by = "prolific_id")
 
 
 
 
 
 #iden
-sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df)
+sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(sc_iden.lmer)
 anova(sc_iden.lmer)
 
@@ -3368,6 +3374,59 @@ anova(task_tension.lmer)
 
 ```
 
+
+#mixed tables MCQ
+```{r}
+
+tab_model(sc_iden.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_iden_lm.html")
+
+
+
+tab_model(sc_norm.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_norm_lm.html")     
+
+
+tab_model(sc_self_other.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_self_other_lm.html")     
+
+tab_model(rel_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "rel_tension_lm.html")     
+
+tab_model(task_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "task_tension_lm.html")     
+
+task_tension
+```
+
+#scatterplot
+```{r}
+
+#sc_iden 
+ggplot(new_excluder_all.df, aes(x = sc_iden, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+#sc_iden_md
+ggplot(new_excluder_all.df, aes(x = sc_iden_md, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+
+
+
+
+ggplot(new_excluder_all.df, aes(x = sc_norm, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+
+
+
+
+
+ggplot(new_excluder_all.df, aes(x = sc_self_other, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+
+
+ggplot(new_excluder_all.df, aes(x = task_tension, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+
+
+ggplot(new_excluder_all.df, aes(x = rel_tension, y = prop)) + geom_jitter(aes(color = x1status)) + facet_wrap(new_excluder_all.df$x1status)
+
+
+
+```
 # EXCLUDER Code to analyse simple effects
 ```{r}
 
@@ -3404,6 +3463,8 @@ anova(excluder_modelexclusion)
 excluder_simples_hs <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * x3context + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_hs)
 anova(excluder_simples_hs)
+#time sig
+
 
 excluder_simples_ls <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * x3context + (xtime | prolific_id), data = excluder_all.df)
 summary(excluder_simples_ls)
@@ -3412,17 +3473,19 @@ anova(excluder_simples_ls)
 excluder_simples_con <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * x3context + (xtime | prolific_id), data = excluder_all.df)
 summary(excluder_simples_con)
 anova(excluder_simples_con)
-
+#time sig
 
 #test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
 #equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
 excluder_simples_social <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df)
 summary(excluder_simples_social)
 anova(excluder_simples_social)
+#time, x1status 
 
 excluder_simples_task <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_task)
 anova(excluder_simples_task)
+#time, xtime:x1status
 
 #test individual slopes - within intersections of power and context levels
 
@@ -3430,16 +3493,20 @@ anova(excluder_simples_task)
 excluder_simples_highsoc <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df)
 summary(excluder_simples_highsoc)
 anova(excluder_simples_highsoc)
+#time 
+
 
 #high status - task (solid line in RH panel)
 excluder_simples_hightask <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_hightask)
 anova(excluder_simples_hightask)
+#time
 
 #low status - social (dotted line in LH panel)
 excluder_simples_lowsoc <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_lowsoc)
 anova(excluder_simples_lowsoc)
+#nothing sig 
 
 #low status - task (solid line in LH panel)
 excluder_simples_lowtask <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df)
@@ -3450,7 +3517,7 @@ anova(excluder_simples_lowtask)
 excluder_simples_consoc <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_consoc)
 anova(excluder_simples_consoc)
-
+#time
 
 
 ##!!!!!!!!!!FAILED TO CONVERGE EVEN WITH OPTIMIZER
@@ -3458,6 +3525,8 @@ anova(excluder_simples_consoc)
 excluder_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(excluder_simples_contask)
 anova(excluder_simples_contask)
+
+#time
 ```
 
 # VICTIM Code to analyse simple effects
@@ -3489,25 +3558,29 @@ anova(victim_modelexclusion)
 victim_simples_hs <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * x3context + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_hs)
 anova(victim_simples_hs)
+#time, xtime:x3context
 
 victim_simples_ls <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * x3context + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_ls)
 anova(victim_simples_ls)
+#non-sig
 
 victim_simples_con <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * x3context + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_con)
 anova(victim_simples_con)
-
+#non-sig
 
 #test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
 #equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
 victim_simples_social <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_social)
 anova(victim_simples_social)
+#x2status
 
 victim_simples_task <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(victim_simples_task)
 anova(victim_simples_task)
+#xtime, x2status, xtime:x1status  
 
 #test individual slopes - within intersections of power and context levels
 
@@ -3520,6 +3593,8 @@ anova(victim_simples_highsoc)
 victim_simples_hightask <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_hightask)
 anova(victim_simples_hightask)
+#xtime
+
 
 #low status - social (dotted line in LH panel)
 victim_simples_lowsoc <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
@@ -3540,6 +3615,7 @@ anova(victim_simples_consoc)
 victim_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df)
 summary(victim_simples_contask)
 anova(victim_simples_contask)
+
 ```
 
 #Suspicion to excel 
