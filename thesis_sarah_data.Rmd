@@ -3326,32 +3326,34 @@ new_excluder_all.df <- merge(qualtricsMCQ, prop_exc, by = "prolific_id")
 
 
 
-
 #iden
-sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(sc_iden.lmer)
 anova(sc_iden.lmer)
+
+#scaling iden
+sc_iden.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(sc_iden_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+#CONVERGING!
+
+
+
+
+
 
 #  sc own need excluder
 sc_self_other.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + sc_self_other_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(sc_self_other.lmer)
 anova(sc_self_other.lmer)
-#####FAIL TO CONVERGE
-#reverse score and md looks fine
+
+###scaling own need
+sc_self_other.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(sc_self_other_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+##still NOT converging
 
 
 
 
-# just own need excluder
-own_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + own_need_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
-summary(own_need.lmer)
-anova(own_need.lmer)
-##convergence issue!!!!
 
-# just other need excluder
-other_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + other_need_r_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
-summary(other_need.lmer)
-anova(other_need.lmer)
+
 
 
 #sc_norm
@@ -3360,6 +3362,12 @@ summary(sc_norm.lmer)
 anova(sc_norm.lmer)
 #####WARNing failed to converge!!!!!
 
+#scaling norm
+sc_norm.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(sc_norm_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+######still NOT converging
+
+
+
 
 
 # rel_tension
@@ -3367,11 +3375,46 @@ rel_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + rel
 summary(rel_tension.lmer)
 anova(rel_tension.lmer)
 
+#scaling rel
+rel_tension.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(rel_tension_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+######still NOT converging
+
+
+
+
+
+
 # task_tension
 task_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + task_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(task_tension.lmer)
 anova(task_tension.lmer)
 
+#scaling task
+task_tension.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(task_tension_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+######still NOT converging
+
+
+
+#POMS
+#make sc range from 0 to max, divide scores by max value 
+(obs-min)/ (max-min)
+
+new_excluder_all.df$POMS_rel_tension <-(new_excluder_all.df$rel_tension_md - 1)/ (5-1)
+
+POMS_rel_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + POMS_rel_tension + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+## NOT CONVERGING 
+
+
+# just own need excluder
+# own_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + own_need_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+# summary(own_need.lmer)
+# anova(own_need.lmer)
+# ##convergence issue!!!!
+# 
+# # just other need excluder
+# other_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + other_need_r_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+# summary(other_need.lmer)
+# anova(other_need.lmer)
 ```
 
 
