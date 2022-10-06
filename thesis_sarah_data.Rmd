@@ -2710,7 +2710,9 @@ all_players_data <- cbind(excluder_all.df, victim_all.df, bystander_all.df)
 
 ```
 
-#Model Mixed
+#Mixed model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
+
+
 ```{r}
 
 #optimizer 
@@ -2744,6 +2746,11 @@ excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context
 summary(excluder_modelexclusion)
 anova(excluder_modelexclusion)
 
+bystander_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = bystander_all.df)
+summary(bystander_modelexclusion)
+anova(bystander_modelexclusion)
+
+
 
 #The estimate for the intercept in fixed effect is 0.368 and that is the mean proportion of throws to victim for the reference group
 #0.01507 for excluder
@@ -2755,18 +2762,15 @@ install.packages("emmeans")
 emmeans(excluder_modelexclusion, list(pairwise ~ x3context), adjust = "tukey")
 emmeans(excluder_modelexclusion, list(pairwise ~ xtime), adjust = "tukey")
 
-
- #emmeans(excluder_modelexclusion, specs = )
-
 #deciding which random slope to include (this doesn't really matter as i think we need to take the maximal approach)
-full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
-reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = victim_all.df)
-anova(full_random_slope_model, reduced_random_int_model)
-#here it is sig
-
-exc_full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
-exc_reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = excluder_all.df)
-anova(exc_full_random_slope_model, exc_reduced_random_int_model)
+# full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
+# reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = victim_all.df)
+# anova(full_random_slope_model, reduced_random_int_model)
+# #here it is sig
+# 
+# exc_full_random_slope_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
+# exc_reduced_random_int_model <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (1 | prolific_id), data = excluder_all.df)
+# anova(exc_full_random_slope_model, exc_reduced_random_int_model)
 ###here it is sig
 
 ```
@@ -2864,7 +2868,10 @@ interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
 interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
 
 # three way int? 
-interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context)
+three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, file = "3wayint")
+
+
+
 
 ```
 
@@ -2883,120 +2890,140 @@ extract_eq(victim_modelexclusion)
 ```
 
 
-######means
+######means proportion
 
 ```{r}
+# 
+# #HS
+# #excluder
+# mean(HS_p1_pre$pre)
+# sd(HS_p1_pre$pre)
+# 
+# mean(HS_p1_post$post)
+# sd(HS_p1_post$post)
+# 
+# 
+# 
+# #HT
+# #excluder
+# 
+# mean(HT_p1_pre$pre)
+# sd(HT_p1_pre$pre)
+# mean(HT_p1_post$post)
+# sd(HT_p1_post$post)
+# 
+# 
+# 
+# 
+# 
+# #MS
+# #MSexcluder
+# mean(MS_p1_pre$pre)
+# sd(MS_p1_pre$pre)
+# mean(MS_p1_post$post)
+# sd(MS_p1_post$post)
+# 
+# 
+# 
+# 
+# 
+# #MT
+# #excluder
+# mean(MT_p1_pre$pre)
+# sd(MT_p1_pre$pre)
+# mean(MT_p1_post$post)
+# sd(MT_p1_post$post)
+# 
+# 
+# 
+# 
+# 
+# #LS
+# #excluder
+# mean(LS_p1_pre$pre)
+# sd(LS_p1_pre$pre)
+# mean(LS_p1_post$post)
+# sd(LS_p1_post$post)
+# 
+# 
+# 
+# 
+# #LT
+# #excluder
+# mean(LT_p1_pre$pre)
+# sd(LT_p1_pre$pre)
+# mean(LT_p1_post$post)
+# sd(LT_p1_post$post)
+# 
+# 
+# # means_sd <- list(HS_p1_pre$pre,HS_p1_post$post, HS_p3_pre$pre,HS_p3_post$post) %>% reduce(left_join, by="player_id")
+# 
+# 
+# 
+# 
+# 
+# ##########
+# 
+# 
+# 
+# # HTvictim
+# mean(HT_p3_pre$pre)
+# sd(HT_p3_pre$pre)
+# mean(HT_p3_post$post)
+# sd(HT_p3_post$post)
+# 
+# #HS victim
+# mean(HS_p3_pre$pre)
+# sd(HS_p3_pre$pre)
+# mean(HS_p3_post$post)
+# sd(HS_p3_pre$pre)
+# 
+# 
+# #MTvictim
+# mean(MT_p3_pre$pre)
+# sd(MT_p3_pre$pre)
+# mean(MT_p3_post$post)
+# sd(MT_p3_post$post)
+# 
+# #MSvictim
+# mean(MS_p3_pre$pre)
+# sd(MS_p3_pre$pre)
+# mean(MS_p3_post$post)
+# sd(MS_p3_post$post)
+# 
+# 
+# #LTvictim
+# mean(LT_p3_pre$pre)
+# sd(LT_p3_pre$pre)
+# mean(LT_p3_post$post)
+# sd(LT_p3_post$post)
+# 
+# 
+# #LSvictim
+# mean(LS_p3_pre$pre)
+# sd(LS_p3_pre$pre)
+# mean(LS_p3_post$post)
+# sd(LS_p3_post$post)
 
-#HS
-#excluder
-mean(HS_p1_pre$pre)
-sd(HS_p1_pre$pre)
 
-mean(HS_p1_post$post)
-sd(HS_p1_post$post)
+meanexcluder <- excluder_all.df %>% group_by(status, context, time) %>%
+    summarise(ex_mean_prop = mean(prop), ex_sd_prop= sd(prop))
 
+meanvictim <- victim_all.df %>% group_by(status, context, time) %>%
+    summarise(vic_mean_prop = mean(prop), vic_sd_prop= sd(prop))
 
+meanbystander <- bystander_all.df %>% group_by(status, context, time) %>%
+    summarise(bys_mean_prop = mean(prop), bys_sd_prop= sd(prop))
 
-#HT
-#excluder
+mean_prop <- merge(meanexcluder, meanvictim, by = c("status", "context", "time"))
+mean_prop <- merge(mean_prop, meanbystander,by = c("status", "context", "time" ))
+      
+      
+#install.packages("rempsyc")
+library(rempsyc)
+means_prop_table <- nice_table(mean_prop)
+ save_as_docx(means_prop_table, path = "means_prop_table.docx")
 
-mean(HT_p1_pre$pre)
-sd(HT_p1_pre$pre)
-mean(HT_p1_post$post)
-sd(HT_p1_post$post)
-
-
-
-
-
-#MS
-#MSexcluder
-mean(MS_p1_pre$pre)
-sd(MS_p1_pre$pre)
-mean(MS_p1_post$post)
-sd(MS_p1_post$post)
-
-
-
-
-
-#MT
-#excluder
-mean(MT_p1_pre$pre)
-sd(MT_p1_pre$pre)
-mean(MT_p1_post$post)
-sd(MT_p1_post$post)
-
-
-
-
-
-#LS
-#excluder
-mean(LS_p1_pre$pre)
-sd(LS_p1_pre$pre)
-mean(LS_p1_post$post)
-sd(LS_p1_post$post)
-
-
-
-
-#LT
-#excluder
-mean(LT_p1_pre$pre)
-sd(LT_p1_pre$pre)
-mean(LT_p1_post$post)
-sd(LT_p1_post$post)
-
-
-# means_sd <- list(HS_p1_pre$pre,HS_p1_post$post, HS_p3_pre$pre,HS_p3_post$post) %>% reduce(left_join, by="player_id")
-
-
-
-
-
-##########
-
-
-
-# HTvictim
-mean(HT_p3_pre$pre)
-sd(HT_p3_pre$pre)
-mean(HT_p3_post$post)
-sd(HT_p3_post$post)
-
-#HS victim
-mean(HS_p3_pre$pre)
-sd(HS_p3_pre$pre)
-mean(HS_p3_post$post)
-sd(HS_p3_pre$pre)
-
-
-#MTvictim
-mean(MT_p3_pre$pre)
-sd(MT_p3_pre$pre)
-mean(MT_p3_post$post)
-sd(MT_p3_post$post)
-
-#MSvictim
-mean(MS_p3_pre$pre)
-sd(MS_p3_pre$pre)
-mean(MS_p3_post$post)
-sd(MS_p3_post$post)
-
-
-#LTvictim
-mean(LT_p3_pre$pre)
-sd(LT_p3_pre$pre)
-mean(LT_p3_post$post)
-sd(LT_p3_post$post)
-
-
-#LSvictim
-mean(LS_p3_pre$pre)
-sd(LS_p3_pre$pre)
-mean(LS_p3_post$post)
-sd(LS_p3_post$post)
 ```
 
 
@@ -3072,17 +3099,22 @@ qualtricsMCQ <- read_excel("/Users/sarahreichman/Desktop/Thesis/FullQualtricsAli
 #making scales
 
 ```{r}
-iden_vars <- c("representative","identification")
-self_other_vars <- c("own_need","other_need")
-norm_vars <- c("wrong","improper", "poorly", "inappropriate" )
-rel_task_vars <- c("rel_tension","task_tension")
 
-
+#numeric
 qualtricsMCQ$representative <- as.numeric(qualtricsMCQ$representative)
 qualtricsMCQ$identification <- as.numeric(qualtricsMCQ$identification)
 qualtricsMCQ$own_need <- as.numeric(qualtricsMCQ$own_need)
 qualtricsMCQ$other_need <- as.numeric(qualtricsMCQ$other_need)
+#already num rel task
 
+# Reverse scores in the desired columns 
+#qualtricsMCQ$other_need_r <- 8 - qualtricsMCQ[ ,8]
+qualtricsMCQ$other_need_r <- 8 - qualtricsMCQ$other_need
+
+iden_vars <- c("representative","identification")
+self_other_vars <- c("own_need","other_need_r")
+norm_vars <- c("wrong","improper", "poorly", "inappropriate" )
+rel_task_vars <- c("rel_tension","task_tension")
 
 qualtricsMCQ <- qualtricsMCQ %>% 
   mutate(sc_iden = rowMeans(qualtricsMCQ[ ,iden_vars], na.rm = TRUE),
@@ -3099,6 +3131,29 @@ qualtricsMCQ <- qualtricsMCQ %>%
 norm_violation.sc <- qualtricsMCQ[,9:12] 
 ##reliability 
 norm_violation.alpha <- psych::alpha(norm_violation.sc, check.keys = TRUE)
+
+
+#iden scale
+iden.sc <- qualtricsMCQ[,5:6] 
+##reliability 
+iden.alpha <- psych::alpha(iden.sc, check.keys = TRUE)
+
+###ACCEPTABLE rel .62
+
+#self_other scale
+self_other.sc <- qualtricsMCQ[ ,self_other_vars]
+##reliability 
+self_other.alpha <- psych::alpha(self_other.sc, check.keys = TRUE)
+
+##LOW RELIABILITY =0.5
+
+#rek_task scale
+rel_task.sc <- qualtricsMCQ[,3:4] 
+##reliability 
+rel_task.alpha <- psych::alpha(rel_task.sc, check.keys = TRUE)
+
+
+#LOW rel 0.56
 
 ```
 
@@ -3129,7 +3184,7 @@ qualtricsMCQ$x2status <- as.numeric(qualtricsMCQ$x2status)
 
 
 ```
-#correlation
+#intercorrelations of scale vars and status within context
 ```{r}
 #corr with the four scales and x1 status
 corrdata <- qualtricsMCQ %>%
@@ -3138,6 +3193,11 @@ corrdata <- qualtricsMCQ %>%
 task_corrdata <- subset(corrdata, corrdata$x3context=="1")
 
 social_corrdata <- subset(corrdata, corrdata$x3context=="-1")
+ 
+
+apa.cor.table(task_corrdata, filename = "task_corr_status.doc")
+apa.cor.table(social_corrdata, filename = "social_corr_status.doc")
+
 
 # task_corr <- round(cor(task_corrdata), 2)
 # head(task_corr[, 1:6])
@@ -3164,17 +3224,38 @@ ggcorrplot(task_corr, method = "circle", type = "upper",
 ##cant find the file
 #include_graphics("status_intercorrs.png")
 
+```
+#means for perception of excluder sc
+```{r}
 
+meaniden <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_iden = mean(sc_iden), sd_iden =  sd(sc_iden)) 
 
-#Sarahs apa table  
+meannorm <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_norm = mean(sc_norm), sd_norm =  sd(sc_norm))
 
-apa.cor.table(task_corrdata, filename = "task_corr_status.doc")
-apa.cor.table(social_corrdata, filename = "social_corr_status.doc")
+meanself_other <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_self_other = mean(sc_self_other), sd_self_other =  sd(sc_self_other))
+
+meanrel_tension <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_rel_tension = mean(rel_tension), sd_rel_tension= sd(rel_tension))
+
+meantask_tension <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_task_tension = mean(task_tension), sd_task_tension= sd(task_tension))
+
+means <- cbind(meaniden, meannorm, meanself_other, meanrel_tension, meantask_tension)
+
+means <- means %>% select(1,2,3,4,7, 8, 11, 12, 15, 16, 19, 20)
+
+install.packages("rempsyc")
+library(rempsyc)
+means_scales_table <- nice_table(means)
+ save_as_docx(means_scales_table, path = "means_scales_table.docx")
 
 ```
 
 
-#5 ANOVA (sc_iden, sc_self_other, etc)
+#5 ANOVA (sc_iden, sc_self_other, etc), testing effects of condition on identification, motivation, norm violation, task conflict, relationship conflict
 ```{r}
 
 
@@ -3182,7 +3263,7 @@ apa.cor.table(social_corrdata, filename = "social_corr_status.doc")
 sc_iden.lm <- lm(sc_iden ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
 summary(sc_iden.lm)
 anova(sc_iden.lm)
-
+ 
 #own need excluder
 sc_self_other.lm <- lm(sc_self_other ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
 summary(sc_self_other.lm)
@@ -3203,17 +3284,267 @@ task_tension.lm <- lm(task_tension ~  (x1status + x2status) * x3context , data =
 summary(task_tension.lm)
 anova(task_tension.lm)
 
+
+
+apa.aov.table(sc_iden.lm, filename = "sc_iden.doc", table.number = 1)
+apa.aov.table(sc_self_other.lm, filename = "sc_self_other.doc", table.number = 1)
+apa.aov.table(sc_norm.lm, filename = "sc_norm.doc", table.number = 1)
+apa.aov.table(rel_tension.lm, filename = "rel_tension.doc", table.number = 1)
+apa.aov.table(task_tension.lm, filename = "task_tension.doc", table.number = 1)
+
+
+
 ```
 
+#mixed model regressions (lmer) testing effects of 5 scale measures (ID, motivation, NV, task conflict, relationship conflict) on pre-post proportion of throws to victim, excluder
+```{r}
+
+#scale predictor - cont - mean centred, 
+
+qualtricsMCQ <- mutate(qualtricsMCQ, sc_iden_md = sc_iden - mean(sc_iden))
+
+qualtricsMCQ <- mutate(qualtricsMCQ, sc_self_other_md = sc_self_other - mean(sc_self_other))
+
+qualtricsMCQ <- mutate(qualtricsMCQ, sc_norm_md = sc_norm - mean(sc_norm))
+
+qualtricsMCQ <- mutate(qualtricsMCQ, task_tension_md = task_tension - mean(task_tension))
+
+qualtricsMCQ <- mutate(qualtricsMCQ, rel_tension_md = rel_tension - mean(rel_tension))
+
+#ADD single own need md
+qualtricsMCQ <- mutate(qualtricsMCQ, own_need_md = own_need - mean(own_need))
+qualtricsMCQ <- mutate(qualtricsMCQ, other_need_r_md = other_need_r - mean(other_need_r))
+
+new_excluder_all.df <- merge(qualtricsMCQ, excluder_all.df, by = "prolific_id")
 
 
 
 
 
+#iden
+sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df)
+summary(sc_iden.lmer)
+anova(sc_iden.lmer)
 
+#  sc own need excluder
+sc_self_other.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + sc_self_other_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(sc_self_other.lmer)
+anova(sc_self_other.lmer)
+#####FAIL TO CONVERGE
+#reverse score and md looks fine
+
+
+
+
+# just own need excluder
+own_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + own_need_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(own_need.lmer)
+anova(own_need.lmer)
+##convergence issue!!!!
+
+# just other need excluder
+other_need.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + other_need_r_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(other_need.lmer)
+anova(other_need.lmer)
+
+
+#sc_norm
+sc_norm.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + sc_norm_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(sc_norm.lmer)
+anova(sc_norm.lmer)
+#####WARNing failed to converge!!!!!
+
+
+
+# rel_tension
+rel_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + rel_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(rel_tension.lmer)
+anova(rel_tension.lmer)
+
+# task_tension
+task_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + task_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(task_tension.lmer)
+anova(task_tension.lmer)
+
+```
+
+# EXCLUDER Code to analyse simple effects
+```{r}
+
+
+control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5))
+
+# first, deviate the status variables to test effects within levels of status
+
+excluder_all.df <- mutate(excluder_all.df, 
+                      d2_x1statushi = x1status - 1, #high status
+                      d2_x2statushi = x2status - 1,
+                      d2_x1statuslo = x1status + 1, #low status
+                      d2_x2statuslo = x2status - 1,
+                      d2_x1statuscon = x1status, #control
+                      d2_x2statuscon = x2status + 2
+                    )
+
+#second, deviate the context variables to test effects within levels of context
+
+excluder_all.df <- mutate(excluder_all.df, 
+                      d2_x3context_t = x3context - 1, #task
+                      d2_x3context_s = x3context + 1  #social
+                    )
+
+#original model
+excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_modelexclusion)
+anova(excluder_modelexclusion)
+
+
+
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+excluder_simples_hs <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * x3context + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_hs)
+anova(excluder_simples_hs)
+
+excluder_simples_ls <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * x3context + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_simples_ls)
+anova(excluder_simples_ls)
+
+excluder_simples_con <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * x3context + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_simples_con)
+anova(excluder_simples_con)
+
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+excluder_simples_social <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_simples_social)
+anova(excluder_simples_social)
+
+excluder_simples_task <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_task)
+anova(excluder_simples_task)
+
+#test individual slopes - within intersections of power and context levels
+
+#high status - social (dotted line in RH panel)
+excluder_simples_highsoc <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_simples_highsoc)
+anova(excluder_simples_highsoc)
+
+#high status - task (solid line in RH panel)
+excluder_simples_hightask <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_hightask)
+anova(excluder_simples_hightask)
+
+#low status - social (dotted line in LH panel)
+excluder_simples_lowsoc <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_lowsoc)
+anova(excluder_simples_lowsoc)
+
+#low status - task (solid line in LH panel)
+excluder_simples_lowtask <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df)
+summary(excluder_simples_lowtask)
+anova(excluder_simples_lowtask)
+
+#control status - social (dotted line in centre panel)
+excluder_simples_consoc <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_consoc)
+anova(excluder_simples_consoc)
+
+
+
+##!!!!!!!!!!FAILED TO CONVERGE EVEN WITH OPTIMIZER
+#control status - task (solid line in centre panel)
+excluder_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(excluder_simples_contask)
+anova(excluder_simples_contask)
+```
+
+# VICTIM Code to analyse simple effects
+```{r}
+# first, deviate the status variables to test effects within levels of status
+
+victim_all.df <- mutate(victim_all.df, 
+                      d2_x1statushi = x1status - 1, #high status
+                      d2_x2statushi = x2status - 1,
+                      d2_x1statuslo = x1status + 1, #low status
+                      d2_x2statuslo = x2status - 1,
+                      d2_x1statuscon = x1status, #control
+                      d2_x2statuscon = x2status + 2
+                    )
+
+#second, deviate the context variables to test effects within levels of context
+
+victim_all.df <- mutate(victim_all.df, 
+                      d2_x3context_t = x3context - 1, #task
+                      d2_x3context_s = x3context + 1  #social
+                    )
+
+#original model
+victim_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
+summary(victim_modelexclusion)
+anova(victim_modelexclusion)
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+victim_simples_hs <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * x3context + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_hs)
+anova(victim_simples_hs)
+
+victim_simples_ls <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * x3context + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_ls)
+anova(victim_simples_ls)
+
+victim_simples_con <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * x3context + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_con)
+anova(victim_simples_con)
+
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+victim_simples_social <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_social)
+anova(victim_simples_social)
+
+victim_simples_task <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(victim_simples_task)
+anova(victim_simples_task)
+
+#test individual slopes - within intersections of power and context levels
+
+#high status - social (dotted line in RH panel)
+victim_simples_highsoc <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_highsoc)
+anova(victim_simples_highsoc)
+
+#high status - task (solid line in RH panel)
+victim_simples_hightask <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_hightask)
+anova(victim_simples_hightask)
+
+#low status - social (dotted line in LH panel)
+victim_simples_lowsoc <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_lowsoc)
+anova(victim_simples_lowsoc)
+
+#low status - task (solid line in LH panel)
+victim_simples_lowtask <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_lowtask)
+anova(victim_simples_lowtask)
+
+#control status - social (dotted line in centre panel)
+victim_simples_consoc <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_consoc)
+anova(victim_simples_consoc)
+
+#control status - task (solid line in centre panel)
+victim_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t + (xtime | prolific_id), data = victim_all.df)
+summary(victim_simples_contask)
+anova(victim_simples_contask)
+```
 
 #Suspicion to excel 
-##HT
+
+
 ```{r}
  install.packages("writexl")
  library(writexl)
@@ -3236,7 +3567,6 @@ HT_sender_na.df <- HT_sender.df[!complete.cases(HT_sender.df), ]
 
 ```
 
-## HS
 ```{r}
 # install.packages("writexl")
 # library(writexl)
@@ -3255,7 +3585,7 @@ HS_sender.df <- HS_sender.df %>%
 HS_sender_na.df <- HS_sender.df[!complete.cases(HS_sender.df), ]
 
 ```
-## MT
+
 ```{r}
 # install.packages("writexl")
 # library(writexl)
@@ -3277,7 +3607,6 @@ MT_sender_na.df <- MT_sender.df[!complete.cases(MT_sender.df), ]
 ```
 
 
-## MS
 ```{r}
 # install.packages("writexl")
 # library(writexl)
@@ -3298,7 +3627,7 @@ MS_sender_na.df <- MS_sender.df[!complete.cases(MS_sender.df), ]
 
 ```
 
-## LT
+
 ```{r}
 # install.packages("writexl")
 # library(writexl)
@@ -3322,7 +3651,6 @@ LT_sender_na.df <- LT_sender.df[!complete.cases(LT_sender.df), ]
 ```
 
 
-## LS
 ```{r}
 # install.packages("writexl")
 # library(writexl)
