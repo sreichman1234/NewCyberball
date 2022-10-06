@@ -2773,6 +2773,9 @@ emmeans(excluder_modelexclusion, list(pairwise ~ xtime), adjust = "tukey")
 # anova(exc_full_random_slope_model, exc_reduced_random_int_model)
 ###here it is sig
 
+
+
+
 ```
 
 ######assumptions
@@ -2868,10 +2871,10 @@ interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
 interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
 
 # three way int? 
-three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 2, file = "3wayint")
+three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, file = "3wayint")
 
 
-
+bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, file = "bystander_3wayint")
 
 ```
 
@@ -3659,6 +3662,107 @@ victim_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) 
 summary(victim_simples_contask)
 anova(victim_simples_contask)
 
+```
+# BYSTANDER Code to analyse simple effects
+```{r}
+
+
+control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5))
+
+# first, deviate the status variables to test effects within levels of status
+
+bystander_all.df <- mutate(bystander_all.df, 
+                      d2_x1statushi = x1status - 1, #high status
+                      d2_x2statushi = x2status - 1,
+                      d2_x1statuslo = x1status + 1, #low status
+                      d2_x2statuslo = x2status - 1,
+                      d2_x1statuscon = x1status, #control
+                      d2_x2statuscon = x2status + 2
+                    )
+
+#second, deviate the context variables to test effects within levels of context
+
+bystander_all.df <- mutate(bystander_all.df, 
+                      d2_x3context_t = x3context - 1, #task
+                      d2_x3context_s = x3context + 1  #social
+                    )
+
+#original model
+bystander_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_modelexclusion)
+anova(bystander_modelexclusion)
+
+
+
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+bystander_simples_hs <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * x3context + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_hs)
+anova(bystander_simples_hs)
+#xtime:x3context  sig
+
+
+bystander_simples_ls <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * x3context + (xtime | prolific_id), data = bystander_all.df)
+summary(bystander_simples_ls)
+anova(bystander_simples_ls)
+#time sig
+
+bystander_simples_con <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * x3context + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_con)
+anova(bystander_simples_con)
+#non sig
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+bystander_simples_social <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_s + (xtime | prolific_id), data = bystander_all.df)
+summary(bystander_simples_social)
+anova(bystander_simples_social)
+#time, x1status , x2 status, xtime:x1status
+
+bystander_simples_task <- lmer(prop ~ xtime * (x1status + x2status) * d2_x3context_t + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_task)
+anova(bystander_simples_task)
+#x1status , x2 status,
+
+#test individual slopes - within intersections of power and context levels
+
+#high status - social (dotted line in RH panel)
+bystander_simples_highsoc <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_s + (xtime | prolific_id), data = bystander_all.df)
+summary(bystander_simples_highsoc)
+anova(bystander_simples_highsoc)
+#time 
+
+
+#high status - task (solid line in RH panel)
+bystander_simples_hightask <- lmer(prop ~ xtime * (d2_x1statushi + d2_x2statushi) * d2_x3context_t + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_hightask)
+anova(bystander_simples_hightask)
+
+
+#low status - social (dotted line in LH panel)
+bystander_simples_lowsoc <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_lowsoc)
+anova(bystander_simples_lowsoc)
+#time sig 
+
+#low status - task (solid line in LH panel)
+bystander_simples_lowtask <- lmer(prop ~ xtime * (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_lowtask)
+anova(bystander_simples_lowtask)
+
+#control status - social (dotted line in centre panel)
+bystander_simples_consoc <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_consoc)
+anova(bystander_simples_consoc)
+#time
+
+
+#control status - task (solid line in centre panel)
+bystander_simples_contask <- lmer(prop ~ xtime * (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t + (xtime | prolific_id), data = bystander_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+summary(bystander_simples_contask)
+anova(bystander_simples_contask)
+
+#time
 ```
 
 #Suspicion to excel 
