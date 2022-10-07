@@ -283,7 +283,7 @@ apatheme=theme_bw()+
         panel.grid.minor=element_blank(),
         panel.border=element_blank(),
         axis.line=element_line(),
-        text=element_text(family='Times'),
+        text=element_text(family='Times New Roman'),
         legend.title=element_blank(),
         axis.text.y=element_text(size = 12),
         axis.text.x=element_text(size = 12))
@@ -456,6 +456,9 @@ trialdata_control <-subset(trialdata1, status == "control")  %>% discard(~all(is
 trialdata_high <-subset(trialdata1, status == "high")  %>% discard(~all(is.na(.) | . ==""))%>% select(-duration_in_seconds,-q_recaptcha_score, -suspicion, -funnel1, -prolific_pid , -time_block_consent, -time_block_besteffort, -time_block_rme_instruction, -time_block_rme, -time_block_cyberball_high, -time_block_age, -time_block_gender, -time_block_nationality, -time_block_data_quality, -time_block_effort, -time_block_social_feedback, -condition)
 
 
+
+install.packages("writexl")
+library(writexl)
 ##im going to join this in excel 
 write_xlsx(trialdata_low,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_low.xlsx")
 write_xlsx(trialdata_control,"C:\\Users\\sarahreichman\\Desktop\\Thesis\\final_trialdata_control.xlsx")
@@ -2710,7 +2713,7 @@ all_players_data <- cbind(excluder_all.df, victim_all.df, bystander_all.df)
 
 ```
 
-#Mixed model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
+#PROP - MIXED model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
 
 
 ```{r}
@@ -2721,7 +2724,7 @@ control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5))
 
 #null model (model only contains random intercept)
 #predicting exclusion prop from the random intercept
-modelnull <- lmer(prop ~  ( 1 | prolific_id), data = victim_all.df)
+modelnull <- lmer(prop ~  ( 1 | prolific_id), data = victim_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(modelnull)
 
 #random effect output - variance is near zero which is bad? for mlm
@@ -2742,7 +2745,7 @@ victim_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context +
 summary(victim_modelexclusion)
 anova(victim_modelexclusion)
 
-excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
+excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(excluder_modelexclusion)
 anova(excluder_modelexclusion)
 
@@ -2870,12 +2873,30 @@ int
 interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
 interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
 
-# three way int? 
-three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, file = "3wayint")
+# three way int 
+vic_three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1,x.label = "time", y.label = "Proportion of ball throws", main.title	= "Victim", file = "victim_3wayint")
+
+excluder_three_way_int <- interact_plot(excluder_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, 
+x.label = "time", y.label = "Proportion of ball throws", main.title	
+= "Excluder") + apatheme
 
 
-bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, file = "bystander_3wayint")
+set_theme(
+  axis.title.size = .9,
+  axis.textsize = .9,
+  legend.size = .7,
+  legend.title.size = .8,
+  geom.label.size = 3
+  )
 
+bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, x.label = "time", y.label = "Proportion of ball throws", main.title	
+= "Bystander", file = "bystander_3wayint")
+
+bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, x.label = "time", y.label = "Proportion of ball throws", legend.main = "context" , main.title	
+= "Bystander") + theme_apa() +
+  theme(text=element_text(family='Times New Roman'),
+        axis.text.y=element_text(size = 12),
+        axis.text.x=element_text(size = 12) + geom_bar()) 
 ```
 
 
@@ -3069,21 +3090,52 @@ boxplot(prop ~ xtime * (x1status + x2status) * x3context, col=c("white","lightgr
 
 
 
-ggplot(excluder_all.df,aes(x=status, y=prop, fill=context)) + 
-  facet_grid(~time) +
-    geom_bar(stat="identity") + 
-    geom_line(size=0.8) +
-    geom_point(alpha = 0.3) + 
-    geom_hline(yintercept=0, linetype="dashed") +
-    theme_bw()
+sd(excluder_all.df$prop)
+[1] 0.1625265
 
-ggplot(victim_all.df,aes(x=status, y=prop, group=interaction(context, status))) + 
- geom_bar(stat="identity") + 
-  facet_grid(~context) +
+
+excluder.plot <- excluder_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=status, y=prop,
+           fill = time)) + facet_grid(~context + ~time ) +
+    geom_bar(stat="identity") +
     geom_line(size=0.8) +
-    geom_point(alpha = 0.3) + 
-    geom_hline(yintercept=0, linetype="dashed") +
-    theme_bw()
+  apatheme +  scale_fill_manual(values = c("Dark Grey","Light Grey")) 
+
+
+
+
+
+
+
+victim.plot <- victim_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=status, y=prop,
+           fill = time)) + facet_grid(~context + ~time ) +
+    geom_bar(stat="identity") +
+    geom_line(size=0.8) +
+  apatheme +  scale_fill_manual(values = c("Dark Grey","Light Grey")) 
+
+
+bystander.plot <- victim_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=status, y=prop,
+           fill = time)) + facet_grid(~context + ~time ) +
+    geom_bar(stat="identity") +
+    geom_line(size=0.8) +
+  apatheme +  scale_fill_manual(values = c("Dark Grey","Light Grey")) 
+
+
+
 ```
 
 
@@ -3095,6 +3147,8 @@ ggplot(victim_all.df,aes(x=status, y=prop, group=interaction(context, status))) 
 #read in
 
 qualtricsMCQ <- read_excel("/Users/sarahreichman/Desktop/Thesis/FullQualtricsAlignedMCQ.xlsx")
+
+REPEATqualtricsMCQ <- read_excel("//Users/sarahreichman/Documents/NewGit/NewCyberball/REPEATqualtricsAligned.xlsx")
 
 ```
 
@@ -3109,10 +3163,15 @@ qualtricsMCQ$identification <- as.numeric(qualtricsMCQ$identification)
 qualtricsMCQ$own_need <- as.numeric(qualtricsMCQ$own_need)
 qualtricsMCQ$other_need <- as.numeric(qualtricsMCQ$other_need)
 #already num rel task
+qualtricsMCQ$wrong <- as.numeric(qualtricsMCQ$wrong)
+qualtricsMCQ$poorly <- as.numeric(qualtricsMCQ$poorly)
+qualtricsMCQ$inappropriate <- as.numeric(qualtricsMCQ$inappropriate)
+qualtricsMCQ$improper <- as.numeric(qualtricsMCQ$improper)
 
 # Reverse scores in the desired columns 
 #qualtricsMCQ$other_need_r <- 6 - qualtricsMCQ[ ,8]
 qualtricsMCQ$other_need_r <- 6 - qualtricsMCQ$other_need
+qualtricsMCQ$other_need_r <- as.numeric(qualtricsMCQ$other_need_r)
 
 iden_vars <- c("representative","identification")
 self_other_vars <- c("own_need","other_need_r")
@@ -3189,7 +3248,7 @@ qualtricsMCQ$x2status <- as.numeric(qualtricsMCQ$x2status)
 
 
 ```
-#intercorrelations of scale vars and status within context
+#interCORRelations of scale vars and status within context
 ```{r}
 #corr with the four scales and x1 status
 corrdata <- qualtricsMCQ %>%
@@ -3301,10 +3360,10 @@ apa.aov.table(task_tension.lm, filename = "task_tension.doc", table.number = 1)
 
 ```
 
-#mixed model regressions (lmer) testing effects of 5 scale measures (ID, motivation, NV, task conflict, relationship conflict) on pre-post proportion of throws to victim, excluder
+#SCALE - MIXED model regressions (lmer) testing effects of 5 scale measures (ID, motivation, NV, task conflict, relationship conflict) on pre-post proportion of throws to victim, excluder
 ```{r}
 
-#scale predictor - cont - mean centred, 
+#scale predictor - mean centred, 
 
 qualtricsMCQ <- mutate(qualtricsMCQ, sc_iden_md = sc_iden - mean(sc_iden))
 
@@ -3317,13 +3376,13 @@ qualtricsMCQ <- mutate(qualtricsMCQ, task_tension_md = task_tension - mean(task_
 qualtricsMCQ <- mutate(qualtricsMCQ, rel_tension_md = rel_tension - mean(rel_tension))
 
 #ADD single own need md
-qualtricsMCQ <- mutate(qualtricsMCQ, own_need_md = own_need - mean(own_need))
-qualtricsMCQ <- mutate(qualtricsMCQ, other_need_r_md = other_need_r - mean(other_need_r))
+#qualtricsMCQ <- mutate(qualtricsMCQ, own_need_md = own_need - mean(own_need))
+#qualtricsMCQ <- mutate(qualtricsMCQ, other_need_r_md = other_need_r - mean(other_need_r))
 
 #need prop and xtime
 prop_exc <- excluder_all.df %>% select(prolific_id, prop, xtime)
 
-
+#combining prop and xtime with MCQ
 new_excluder_all.df <- merge(qualtricsMCQ, prop_exc, by = "prolific_id")
 
 
@@ -3765,6 +3824,25 @@ anova(bystander_simples_contask)
 #time
 ```
 
+
+#sensitivity
+```{r}
+# runs sensemakr for sensitivity analysis
+install.packages("sensemakr")
+library(sensemakr)
+
+
+darfur.sensitivity <- sensemakr(model = excluder_modelexclusion, 
+                                treatment = "x1status",
+                                benchmark_covariates = "x3context",
+                                kd = 1:3,
+                                ky = 1:3, 
+                                q =x 1,
+                                alpha = 0.05, 
+                                reduce = TRUE)
+```
+
+
 #Suspicion to excel 
 
 
@@ -3999,4 +4077,126 @@ write_csv(LS_chat_post_ex,"/Users/sarahreichman/Desktop/Thesis/LS_chat_post_ex.c
 # write_csv(text_LS_sender_na.df,"/Users/sarahreichman/Desktop/Thesis/text_LS_chat_bot.csv")
 ```
 
+
+
+#REPEAT JOIN QUALTRICS
  
+
+#making scales
+
+```{r}
+
+#numeric
+REPEATqualtricsMCQ$representative <- as.numeric(REPEATqualtricsMCQ$representative)
+REPEATqualtricsMCQ$identification <- as.numeric(REPEATqualtricsMCQ$identification)
+REPEATqualtricsMCQ$own_need <- as.numeric(REPEATqualtricsMCQ$own_need)
+REPEATqualtricsMCQ$other_need <- as.numeric(REPEATqualtricsMCQ$other_need)
+#already num rel task
+
+
+#ADDED
+REPEATqualtricsMCQ$wrong <- as.numeric(REPEATqualtricsMCQ$wrong)
+REPEATqualtricsMCQ$poorly <- as.numeric(REPEATqualtricsMCQ$poorly)
+REPEATqualtricsMCQ$inappropriate <- as.numeric(REPEATqualtricsMCQ$inappropriate)
+REPEATqualtricsMCQ$improper <- as.numeric(REPEATqualtricsMCQ$improper)
+
+# Reverse scores in the desired columns 
+#REPEATqualtricsMCQ$other_need_r <- 6 - REPEATqualtricsMCQ[ ,8]
+REPEATqualtricsMCQ$other_need_r <- 6 - REPEATqualtricsMCQ$other_need
+
+#ADDED
+REPEATqualtricsMCQ$other_need_r <- as.numeric(REPEATqualtricsMCQ$other_need_r)
+
+iden_vars <- c("representative","identification")
+self_other_vars <- c("own_need","other_need_r")
+norm_vars <- c("wrong","improper", "poorly", "inappropriate" )
+rel_task_vars <- c("rel_tension","task_tension")
+
+REPEATqualtricsMCQ <- REPEATqualtricsMCQ %>% 
+  mutate(sc_iden = rowMeans(REPEATqualtricsMCQ[ ,iden_vars], na.rm = TRUE),
+         sc_self_other= rowMeans(REPEATqualtricsMCQ[ ,self_other_vars], na.rm = TRUE),
+         sc_norm = rowMeans(REPEATqualtricsMCQ[ ,norm_vars], na.rm = TRUE),
+         sc_rel_task = rowMeans(REPEATqualtricsMCQ[ ,rel_task_vars], na.rm = TRUE))
+```
+
+###norm scale
+```{r}
+
+
+#norm violation scale
+norm_violation.sc <- REPEATqualtricsMCQ[,9:12] 
+##reliability 
+norm_violation.alpha <- psych::alpha(norm_violation.sc, check.keys = TRUE)
+
+
+#iden scale
+iden.sc <- REPEATqualtricsMCQ[,5:6] 
+##reliability 
+iden.alpha <- psych::alpha(iden.sc, check.keys = TRUE)
+
+###ACCEPTABLE rel .62
+
+#self_other scale
+self_other.sc <- REPEATqualtricsMCQ[ ,self_other_vars]
+##reliability 
+self_other.alpha <- psych::alpha(self_other.sc, check.keys = TRUE)
+
+apa.cor.table(REPEATqualtricsMCQ[ ,self_other_vars], filename = "REPEATself_other_corr.doc")
+#.34 corr sig
+##LOW RELIABILITY =0.5
+########CHANGED!!!!!!!!!!!!!!!!!!?
+
+
+#rel_task scale
+rel_task.sc <- REPEATqualtricsMCQ[,3:4] 
+##reliability 
+rel_task.alpha <- psych::alpha(rel_task.sc, check.keys = TRUE)
+
+
+#LOW rel 0.56
+
+```
+
+
+#adding contrast coded variables to the Qualtrics
+```{r}
+#adding status from the other dataset
+#no full data has dummy coded status or context so im doing it now
+#       x1status
+REPEATqualtricsMCQ <- mutate(REPEATqualtricsMCQ, x1status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "-1", "0")))
+
+#     x2status = +1 HS, -2 C, +1 LS
+REPEATqualtricsMCQ <- mutate(REPEATqualtricsMCQ, x2status =
+              ifelse(status == "high", "1",
+              ifelse(status == "low", "1", "-2")))
+
+#    x3type = +1 Task, -1 Social
+REPEATqualtricsMCQ <- mutate(REPEATqualtricsMCQ, x3context =
+                              ifelse(context == "task", "1", "-1"))
+#making numeric
+REPEATqualtricsMCQ$x3context <- as.numeric(REPEATqualtricsMCQ$x3context)
+REPEATqualtricsMCQ$x1status <- as.numeric(REPEATqualtricsMCQ$x1status)
+REPEATqualtricsMCQ$x2status <- as.numeric(REPEATqualtricsMCQ$x2status)
+
+
+
+
+```
+#intercorrelations of scale vars and status within context
+```{r}
+#corr with the four scales and x1 status
+REPEATcorrdata <- REPEATqualtricsMCQ %>%
+  select(sc_iden, sc_self_other, sc_norm, sc_rel_task, x1status, x3context)
+           
+REPEATtask_corrdata <- subset(REPEATcorrdata, corrdata$x3context=="1")
+
+REPEATsocial_corrdata <- subset(REPEATcorrdata, corrdata$x3context=="-1")
+ 
+
+apa.cor.table(REPEATtask_corrdata, filename = "REPEATtask_corr_status.doc")
+apa.cor.table(REPEATsocial_corrdata, filename = "REPEATsocial_corr_status.doc")
+
+ 
+```
