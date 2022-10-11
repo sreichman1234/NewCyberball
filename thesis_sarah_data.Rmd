@@ -3466,7 +3466,7 @@ apa.aov.table(task_tension.lm, filename = "task_tension.doc", table.number = 1)
 
 
 ```
-
+#******@ JEN - here ******!!!!!!!!!!!!!!
 # SC_IDEN EXCLUDER Code to analyse simple effects
 ```{r}
 write_csv(qualtricsMCQ, "qualtricsMCQ.csv")
@@ -3569,26 +3569,6 @@ anova(sc_iden_excluder_simples_contask)
 
 
 
-# first, deviate the status variables to test effects within levels of status
-
-qualtricsMCQ <- mutate(qualtricsMCQ, 
-                      d2_x1statushi = x1status - 1, #high status
-                      d2_x2statushi = x2status - 1,
-                      d2_x1statuslo = x1status + 1, #low status
-                      d2_x2statuslo = x2status - 1,
-                      d2_x1statuscon = x1status, #control
-                      d2_x2statuscon = x2status + 2
-                    )
-
-#second, deviate the context variables to test effects within levels of context
-
-qualtricsMCQ <- mutate(qualtricsMCQ, 
-                      d2_x3context_t = x3context - 1, #task
-                      d2_x3context_s = x3context + 1  #social
-                    )
-
-
-
 #test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
 sc_norm_excluder_simples_hs <- lm(sc_norm ~  (d2_x1statushi + d2_x2statushi) * x3context , data = qualtricsMCQ)
 summary(sc_norm_excluder_simples_hs)
@@ -3662,26 +3642,6 @@ anova(sc_norm_excluder_simples_contask)
 
 # SC_SELF_OTHER EXCLUDER Code to analyse simple effects
 ```{r}
-
-
-
-# first, deviate the status variables to test effects within levels of status
-
-qualtricsMCQ <- mutate(qualtricsMCQ, 
-                      d2_x1statushi = x1status - 1, #high status
-                      d2_x2statushi = x2status - 1,
-                      d2_x1statuslo = x1status + 1, #low status
-                      d2_x2statuslo = x2status - 1,
-                      d2_x1statuscon = x1status, #control
-                      d2_x2statuscon = x2status + 2
-                    )
-
-#second, deviate the context variables to test effects within levels of context
-
-qualtricsMCQ <- mutate(qualtricsMCQ, 
-                      d2_x3context_t = x3context - 1, #task
-                      d2_x3context_s = x3context + 1  #social
-                    )
 
 
 
