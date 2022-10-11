@@ -83,6 +83,6 @@ anova(excluder_simples_contask)
 ######Revised to read in Sarah's comprehensive dataframe and work with that
 
 full.df <- read.csv("qualtricsMCQ.csv")
-
+qualtricsMCQ <- full.df
 
 
