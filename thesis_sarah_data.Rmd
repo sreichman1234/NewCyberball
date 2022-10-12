@@ -283,7 +283,7 @@ apatheme=theme_bw()+
         panel.grid.minor=element_blank(),
         panel.border=element_blank(),
         axis.line=element_line(),
-        text=element_text(family='Times'),
+        text=element_text(family='Times New Roman'),
         legend.title=element_blank(),
         axis.text.y=element_text(size = 12),
         axis.text.x=element_text(size = 12))
@@ -2713,7 +2713,7 @@ all_players_data <- cbind(excluder_all.df, victim_all.df, bystander_all.df)
 
 ```
 
-#Mixed model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
+#PROP - MIXED model ANOVAs (lmer) testing effects of between-Ss conditions AND within-Ss factor (time) on proportion of throws to victim, excluder (H1, H2)
 
 
 ```{r}
@@ -2724,7 +2724,7 @@ control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5))
 
 #null model (model only contains random intercept)
 #predicting exclusion prop from the random intercept
-modelnull <- lmer(prop ~  ( 1 | prolific_id), data = victim_all.df)
+modelnull <- lmer(prop ~  ( 1 | prolific_id), data = victim_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(modelnull)
 
 #random effect output - variance is near zero which is bad? for mlm
@@ -2741,15 +2741,15 @@ summary(modelnull)
 
 
 # models
-victim_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df)
+victim_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = victim_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(victim_modelexclusion)
 anova(victim_modelexclusion)
 
-excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df)
+excluder_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(excluder_modelexclusion)
 anova(excluder_modelexclusion)
 
-bystander_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = bystander_all.df)
+bystander_modelexclusion <- lmer(prop ~ xtime * (x1status + x2status) * x3context + (xtime | prolific_id), data = bystander_all.df,  control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 summary(bystander_modelexclusion)
 anova(bystander_modelexclusion)
 
@@ -2780,6 +2780,26 @@ emmeans(excluder_modelexclusion, list(pairwise ~ xtime), adjust = "tukey")
 
 
 ```
+
+
+
+#report package?
+```{r}
+# install.packages("ISLR")
+# install.packages("report")
+# install.packages("ggstatsplot")
+library(ISLR)        # provides dataset
+library(report)      # to report results
+library(sjPlot)      # visualizes model results
+library(flextable)   # for beautiful tables
+library(tidyverse)   # provides a lot of useful stuff !!! 
+
+
+options(scipen = 100)
+report(victim_modelexclusion)
+report_random(victim_modelexclusion)
+```
+
 
 ######assumptions
 ```{r}
@@ -2873,80 +2893,30 @@ int
 interact_plot(excluder_modelexclusion, pred= x1status, modx = x3context)
 interact_plot(victim_modelexclusion, pred= x1status, modx = x3context)
 
-
-
-
-
-
-
-
-
-```
-#THREE WAY INT
-```{r}
-
-#apa
-apatheme=theme_bw()+
-  theme(panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        panel.border=element_blank(),
-        axis.line=element_line(),
-        text=element_text(family='Times'),
-        legend.title=element_blank(),
-        axis.text.y=element_text(size = 12),
-        axis.text.x=element_text(size = 12))
-
-# three way int vic
-vic_three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1,x.label = "time", y.label = "Proportion of ball throws", main.title	= "Victim")+theme_bw()+
-  theme(panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.line=element_line(),
-        text=element_text(family='Times'),
-        legend.title=element_blank(),
-        axis.text.y=element_text(size = 12),
-        axis.text.x=element_text(size = 12))
-
-
-
-#exc
+# three way int 
+vic_three_way_int <- interact_plot(victim_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1,x.label = "time", y.label = "Proportion of ball throws", main.title	= "Victim", file = "victim_3wayint")
 
 excluder_three_way_int <- interact_plot(excluder_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, 
 x.label = "time", y.label = "Proportion of ball throws", main.title	
-= "Excluder") +theme_bw()+
-  theme(panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.line=element_line(),
-        text=element_text(family='Times'),
-        legend.title=element_blank(),
-        axis.text.y=element_text(size = 12),
-        axis.text.x=element_text(size = 12))
+= "Excluder") + apatheme
 
 
+set_theme(
+  axis.title.size = .9,
+  axis.textsize = .9,
+  legend.size = .7,
+  legend.title.size = .8,
+  geom.label.size = 3
+  )
 
-
-#bys
 bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, x.label = "time", y.label = "Proportion of ball throws", main.title	
-= "Bystander") + theme_bw()+
-  theme(panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.line=element_line(),
-        text=element_text(family='Times'),
-        legend.title=element_blank(),
+= "Bystander", file = "bystander_3wayint")
+
+bystander_three_way_int <- interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, x.label = "time", y.label = "Proportion of ball throws", legend.main = "context" , main.title	
+= "Bystander") + theme_apa() +
+  theme(text=element_text(family='Times New Roman'),
         axis.text.y=element_text(size = 12),
-        axis.text.x=element_text(size = 12))
-
-
-
-
-#apa
-interact_plot(bystander_modelexclusion, pred= xtime, mod2 = x1status, modx = x3context, n.sd = 1, x.label = "time", y.label = "Proportion of ball throws", main.title	= "Bystander")+theme_bw()+
-  theme(panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.line=element_line(),
-        text=element_text(family='Times'),
-        legend.title=element_blank(),
-        axis.text.y=element_text(size = 12),
-        axis.text.x=element_text(size = 12))
+        axis.text.x=element_text(size = 12) + geom_bar()) 
 ```
 
 
@@ -3108,13 +3078,23 @@ means_prop_table <- nice_table(mean_prop)
 ```{r}
 
 
+# can add collapse.se = TRUE,
 
-tab_model(excluder_modelexclusion, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", dv.labels = c("exclusion")  , file = "exc_model.html")
+tab_model(excluder_modelexclusion, show.se = TRUE, show.re.var = FALSE, show.r2 = TRUE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", string.est = "Estimate (SE)", dv.labels = c("Proportion of Throws to the Excluder") , pred.labels = c("Intercept", "Time (pre vs post exclusion request)", "Status (linear contrast)", "Status (quadratic contrast)", "Context (Task vs Social)", "Time * Status (linear contrast)", "Time * Status (quadratic contrast) ", "Time * Context", "Status (linear contrast) * Context", "Status (quadratic contrast) * Context" , "Time * Status (linear contrast) * Context", "Time * Status (quadratic contrast) * Context"),  file = "exc_model.html")
           
-tab_model(victim_modelexclusion, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", dv.labels = c("exclusion")  , file = "vic_model.html")
 
-##can get them next to eachother
-excluder_victim_results_table <- tab_model(excluder_modelexclusion, victim_modelexclusion, dv.labels = c("excluder", "victim"), show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", file = "vic_exc_model.html")
+
+tab_model(victim_modelexclusion, show.se = TRUE, show.re.var = FALSE, show.r2 = TRUE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", string.est = "Estimate (SE)", dv.labels = c("Proportion of Throws to the Victim") , pred.labels = c("Intercept", "Time (pre vs post exclusion request)", "Status (linear contrast)", "Status (quadratic contrast)", "Context (Task vs Social)", "Time * Status (linear contrast)", "Time * Status (quadratic contrast) ", "Time * Context", "Status (linear contrast) * Context", "Status (quadratic contrast) * Context" , "Time * Status (linear contrast) * Context", "Time * Status (quadratic contrast) * Context"),  file = "vic_model.html")
+          
+
+
+
+
+
+# tab_model(victim_modelexclusion, show.re.var = FALSE, show.se = TRUE, show.r2 = TRUE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", dv.labels = c("Exclusion")  , file = "vic_model.html")
+
+##can get them next to each other
+# excluder_victim_results_table <- tab_model(excluder_modelexclusion, victim_modelexclusion, dv.labels = c("excluder", "victim"), show.re.var = FALSE, show.se = TRUE, show.r2 = TRUE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)", file = "vic_exc_model.html")
 ```
 
 #### plots
@@ -3140,21 +3120,128 @@ boxplot(prop ~ xtime * (x1status + x2status) * x3context, col=c("white","lightgr
 
 
 
-ggplot(excluder_all.df,aes(x=status, y=prop, fill=context)) + 
-  facet_grid(~time) +
-    geom_bar(stat="identity") + 
-    geom_line(size=0.8) +
-    geom_point(alpha = 0.3) + 
-    geom_hline(yintercept=0, linetype="dashed") +
-    theme_bw()
+sd(excluder_all.df$prop)
+[1] 0.1625265
 
-ggplot(victim_all.df,aes(x=status, y=prop, group=interaction(context, status))) + 
- geom_bar(stat="identity") + 
-  facet_grid(~context) +
+#new var combines status and time highstatuspre
+#x-axis put new vars as x=
+
+```
+
+# plots by status context and time
+```{r}
+
+
+# New facet label names for dose variable
+cap_name.labs <- c("High", "Control", "Low")
+names(cap_name.labs) <- c("high", "control", "low")
+
+# New facet label names for supp variable
+cap_name_context.labs <- c("Task", "Social")
+names(cap_name_context.labs) <- c("task", "social") 
+
+#add means sd column for error bars
+excluder_all_plot.df <- excluder_all.df %>%
+  group_by(status, context) %>% mutate(mean = as.numeric(as.character(mean(prop))),
+                     sd = as.numeric(as.character(sd(prop))))
+
+
+### I tried to swtich to proportions by using gcol but was weird and said they were throwing all the time to exc across all conditions 
+
+excluder.plot <-excluder_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=time, y=prop, fill = time)) + facet_grid(~context + ~status, labeller = labeller(status = cap_name.labs, context = cap_name_context.labs)) +
+    geom_bar(stat="identity") +
+    geom_line(size=0.8)  +
+  scale_fill_manual(values = c("Light Grey", "Dark Grey")) + geom_errorbar(mapping=aes(prop, ymin = prop-sd, ymax = prop+sd),width=0.1,size=0.3)+
+  theme_bw()+
+   theme(panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),        
+        axis.text.y=element_text(size = 12),
+       legend.title=element_text(size = 10),
+        panel.border=element_blank(),
+        text=element_text(family='Times New Roman'),
+       axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line=element_line(),
+       strip.background = element_blank(),
+        axis.title.x = element_blank()) +
+   labs(title = "Excluder", y = "Percentage of Ball Tosses") +
+  labs(fill = "Time")+ 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 34)) 
+excluder.plot
+
+
+ geom_errorbar(
+    aes(ymin = mean-sd, ymax = mean+sd), data = df.summary, 
+    width = 0.2, position = position_dodge(0.8))+
+
+excluder.plot <-excluder_all.df %>% 
+        ggplot(aes(x=time, y=prop, fill = time), position = "dodge")
+excluder.plot
+
+
+                                                                              excluder_all.df$mean <- excluder_all.df %>%
+  group_by(status, context) %>%
+  summarise(mean = mean(prop) )                                                               
+
+
+merge(df.summary, excluder_all.df, by = status)                                                                              
+                                                                              excluder_all.df$sd <- sd(prop)                                                                                                                                                                                                                                                        
+                                                                                                                                          
+df.summary <- excluder_all.df %>%
+  group_by(status, context) %>%
+  summarise(
+    sd = sd(prop, na.rm = TRUE),
+    
+    
+    
+  
+
+
+f <- ggplot(
+  df.summary, 
+  aes(x = , y = prop, ymin = prop-sd, ymax = prop+sd)
+  )
+
+
++geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4,size=1.3)
+ 
+
+ggsave("excluder.plot.png")
+
+
+victim.plot <- victim_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=time, y=prop,
+           fill = time), position = "dodge") + facet_grid(~context + ~status ) +
+    geom_bar(stat="identity") +
+    geom_line(size=0.8) + 
+  apatheme +  scale_fill_manual(values = c("Light Grey","Dark Grey")) 
+
+
+
+
+bystander.plot <- bystander_all.df %>%
+  mutate(status = fct_relevel(status, 
+            "high", "control", "low")) %>%
+  mutate(time = fct_relevel(time, 
+            "pre", "post")) %>%
+        ggplot(aes(x=time, y=prop,
+           fill = time)) + facet_grid(~context + ~status ) +  geom_bar(stat="identity") +
     geom_line(size=0.8) +
-    geom_point(alpha = 0.3) + 
-    geom_hline(yintercept=0, linetype="dashed") +
-    theme_bw()
+   labs(title="Bystander",
+        x ="", y = "Proportion of Ball Tosses") +
+  labs(fill = "Time (pre vs post exclusion request)")+
+axis.title.x = element_blank()
+  apatheme +  scale_fill_manual(values = c("Light Grey","Dark Grey"))  
+
 ```
 
 
@@ -3267,7 +3354,7 @@ qualtricsMCQ$x2status <- as.numeric(qualtricsMCQ$x2status)
 
 
 ```
-#intercorrelations of scale vars and status within context
+#interCORRelations of scale vars and status within context
 ```{r}
 #corr with the four scales and x1 status
 corrdata <- qualtricsMCQ %>%
@@ -3379,7 +3466,326 @@ apa.aov.table(task_tension.lm, filename = "task_tension.doc", table.number = 1)
 
 ```
 
-#mixed model regressions (lmer) testing effects of 5 scale measures (ID, motivation, NV, task conflict, relationship conflict) on pre-post proportion of throws to victim, excluder
+#means for perception of excluder sc
+```{r}
+
+meaniden <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_iden = mean(sc_iden), sd_iden =  sd(sc_iden)) 
+
+meannorm <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_norm = mean(sc_norm), sd_norm =  sd(sc_norm))
+
+meanself_other <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_self_other = mean(sc_self_other), sd_self_other =  sd(sc_self_other))
+
+meanrel_tension <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_rel_tension = mean(rel_tension), sd_rel_tension= sd(rel_tension))
+
+meantask_tension <- qualtricsMCQ %>% group_by(status, context) %>%
+    summarise(mean_task_tension = mean(task_tension), sd_task_tension= sd(task_tension))
+
+means <- cbind(meaniden, meannorm, meanself_other, meanrel_tension, meantask_tension)
+
+means <- means %>% select(1,2,3,4,7, 8, 11, 12, 15, 16, 19, 20)
+
+install.packages("rempsyc")
+library(rempsyc)
+means_scales_table <- nice_table(means)
+ save_as_docx(means_scales_table, path = "updated_means_scales_table.docx")
+#updating it lead to self-other changing
+```
+
+
+#5 ANOVA (sc_iden, sc_self_other, etc), testing effects of condition on identification, motivation, norm violation, task conflict, relationship conflict
+```{r}
+
+
+#sc_iden
+sc_iden.lm <- lm(sc_iden ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_iden.lm)
+anova(sc_iden.lm)
+ 
+#own need excluder
+sc_self_other.lm <- lm(sc_self_other ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_self_other.lm)
+anova(sc_self_other.lm)
+
+#sc_norm
+sc_norm.lm <- lm(sc_norm ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(sc_norm.lm)
+anova(sc_norm.lm)
+
+# rel_tension
+rel_tension.lm <- lm(rel_tension ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(rel_tension.lm)
+anova(rel_tension.lm)
+
+# task_tension
+task_tension.lm <- lm(task_tension ~  (x1status + x2status) * x3context , data = qualtricsMCQ)
+summary(task_tension.lm)
+anova(task_tension.lm)
+
+
+
+apa.aov.table(sc_iden.lm, filename = "sc_iden.doc", table.number = 1)
+apa.aov.table(sc_self_other.lm, filename = "sc_self_other.doc", table.number = 1)
+apa.aov.table(sc_norm.lm, filename = "sc_norm.doc", table.number = 1)
+apa.aov.table(rel_tension.lm, filename = "rel_tension.doc", table.number = 1)
+apa.aov.table(task_tension.lm, filename = "task_tension.doc", table.number = 1)
+
+
+
+```
+#******@ JEN - here ******!!!!!!!!!!!!!!
+# SC_IDEN EXCLUDER Code to analyse simple effects
+```{r}
+write_csv(qualtricsMCQ, "qualtricsMCQ.csv")
+
+
+# first, deviate the status variables to test effects within levels of status
+
+qualtricsMCQ <- mutate(qualtricsMCQ, 
+                      d2_x1statushi = x1status - 1, #high status
+                      d2_x2statushi = x2status - 1,
+                      d2_x1statuslo = x1status + 1, #low status
+                      d2_x2statuslo = x2status - 1,
+                      d2_x1statuscon = x1status, #control
+                      d2_x2statuscon = x2status + 2
+                    )
+
+#second, deviate the context variables to test effects within levels of context
+
+qualtricsMCQ <- mutate(qualtricsMCQ, 
+                      d2_x3context_t = x3context - 1, #task
+                      d2_x3context_s = x3context + 1  #social
+                    )
+
+
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+sc_iden_excluder_simples_hs <- lm(sc_iden ~  (d2_x1statushi + d2_x2statushi) * x3context, data = qualtricsMCQ)
+summary(sc_iden_excluder_simples_hs)
+anova(sc_iden_excluder_simples_hs)
+#context sig
+
+
+sc_iden_excluder_simples_ls <- lm(sc_iden ~  (d2_x1statuslo + d2_x2statuslo) * x3context, data = qualtricsMCQ)
+summary(sc_iden_excluder_simples_ls)
+anova(sc_iden_excluder_simples_ls)
+#
+
+sc_iden_excluder_simples_con <- lm(sc_iden ~  (d2_x1statuscon + d2_x2statuscon) * x3context , data = qualtricsMCQ)
+summary(sc_iden_excluder_simples_con)
+anova(sc_iden_excluder_simples_con)
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+sc_iden_excluder_simples_social <- lm(sc_iden ~  (x1status + x2status) * d2_x3context_s , data = qualtricsMCQ)
+summary(sc_iden_excluder_simples_social)
+anova(sc_iden_excluder_simples_social)
+  
+
+sc_iden_excluder_simples_task <- lm(sc_iden ~  (x1status + x2status) * d2_x3context_t, data = qualtricsMCQ)
+summary(sc_iden_excluder_simples_task)
+anova(sc_iden_excluder_simples_task)
+#x2status
+
+# #test individual slopes - within intersections of power and context levels
+# 
+# #high status - social (dotted line in RH panel)
+# sc_iden_excluder_simples_highsoc <- lm(sc_iden ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_s, data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_highsoc)
+# anova(sc_iden_excluder_simples_highsoc)
+# 
+# ##sig intercept
+# 
+# #high status - task (solid line in RH panel)
+# sc_iden_excluder_simples_hightask <- lm(sc_iden ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_t, data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_hightask)
+# anova(sc_iden_excluder_simples_hightask)
+# #sig
+# 
+# #low status - social (dotted line in LH panel)
+# sc_iden_excluder_simples_lowsoc <- lm(sc_iden ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_lowsoc)
+# anova(sc_iden_excluder_simples_lowsoc)
+# #sig
+# 
+# #low status - task (solid line in LH panel)
+# sc_iden_excluder_simples_lowtask <- lm(sc_iden ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_lowtask)
+# anova(sc_iden_excluder_simples_lowtask)
+#  #sig
+# 
+# #control status - social (dotted line in centre panel)
+# sc_iden_excluder_simples_consoc <- lm(sc_iden ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_consoc)
+# anova(sc_iden_excluder_simples_consoc)
+#  
+# 
+# #sig
+# 
+# #control status - task (solid line in centre panel)
+# sc_iden_excluder_simples_contask <- lm(sc_iden ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_iden_excluder_simples_contask)
+# anova(sc_iden_excluder_simples_contask)
+# #sig
+```
+
+
+# SC_NORM EXCLUDER Code to analyse simple effects
+```{r}
+
+
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+sc_norm_excluder_simples_hs <- lm(sc_norm ~  (d2_x1statushi + d2_x2statushi) * x3context , data = qualtricsMCQ)
+summary(sc_norm_excluder_simples_hs)
+anova(sc_norm_excluder_simples_hs)
+ 
+
+
+sc_norm_excluder_simples_ls <- lm(sc_norm ~  (d2_x1statuslo + d2_x2statuslo) * x3context, data = qualtricsMCQ)
+summary(sc_norm_excluder_simples_ls)
+anova(sc_norm_excluder_simples_ls)
+ 
+
+sc_norm_excluder_simples_con <- lm(sc_norm ~  (d2_x1statuscon + d2_x2statuscon) * x3context , data = qualtricsMCQ)
+summary(sc_norm_excluder_simples_con)
+anova(sc_norm_excluder_simples_con)
+ 
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+sc_norm_excluder_simples_social <- lm(sc_norm ~  (x1status + x2status) * d2_x3context_s , data = qualtricsMCQ)
+summary(sc_norm_excluder_simples_social)
+anova(sc_norm_excluder_simples_social)
+#x1status 
+
+sc_norm_excluder_simples_task <- lm(sc_norm ~  (x1status + x2status) * d2_x3context_t, data = qualtricsMCQ)
+summary(sc_norm_excluder_simples_task)
+anova(sc_norm_excluder_simples_task)
+ 
+
+#test individual slopes - within intersections of power and context levels
+
+#high status - social (dotted line in RH panel)
+# sc_norm_excluder_simples_highsoc <- lm(sc_norm ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_s, data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_highsoc)
+# anova(sc_norm_excluder_simples_highsoc)
+# 
+# 
+# 
+# #high status - task (solid line in RH panel)
+# sc_norm_excluder_simples_hightask <- lm(sc_norm ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_t, data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_hightask)
+# anova(sc_norm_excluder_simples_hightask)
+# 
+# 
+# #low status - social (dotted line in LH panel)
+# sc_norm_excluder_simples_lowsoc <- lm(sc_norm ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_lowsoc)
+# anova(sc_norm_excluder_simples_lowsoc)
+#  
+# 
+# #low status - task (solid line in LH panel)
+# sc_norm_excluder_simples_lowtask <- lm(sc_norm ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_lowtask)
+# anova(sc_norm_excluder_simples_lowtask)
+#  
+# 
+# #control status - social (dotted line in centre panel)
+# sc_norm_excluder_simples_consoc <- lm(sc_norm ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_consoc)
+# anova(sc_norm_excluder_simples_consoc)
+#  
+# 
+# 
+# #control status - task (solid line in centre panel)
+# sc_norm_excluder_simples_contask <- lm(sc_norm ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_norm_excluder_simples_contask)
+# anova(sc_norm_excluder_simples_contask)
+
+```
+
+
+# SC_SELF_OTHER EXCLUDER Code to analyse simple effects
+```{r}
+
+
+
+#test effects within status - this will be like looking within panels of high vs medium vs low at the 2-way interactions in the panels
+sc_self_other_excluder_simples_hs <- lm(sc_self_other ~ (d2_x1statushi + d2_x2statushi) * x3context , data = qualtricsMCQ)
+summary(sc_self_other_excluder_simples_hs)
+anova(sc_self_other_excluder_simples_hs)
+#context
+# in high status context is influential, with the excluder in the social context viewed as more self concerned than the high status excluder in the task context.
+
+sc_self_other_excluder_simples_ls <- lm(sc_self_other ~  (d2_x1statuslo + d2_x2statuslo) * x3context, data = qualtricsMCQ)
+summary(sc_self_other_excluder_simples_ls)
+anova(sc_self_other_excluder_simples_ls)
+ 
+
+sc_self_other_excluder_simples_con <- lm(sc_self_other ~  (d2_x1statuscon + d2_x2statuscon) * x3context , data = qualtricsMCQ)
+summary(sc_self_other_excluder_simples_con)
+anova(sc_self_other_excluder_simples_con)
+ 
+
+#test effects within context - this will tell us useful stuff about how the status-exclusion patterns show up within task vs social separately
+#equivalent to testing one-way ANOVA of status with only solid lines or with only the dotted lines
+sc_self_other_excluder_simples_social <- lm(sc_self_other ~  (x1status + x2status) * d2_x3context_s , data = qualtricsMCQ)
+summary(sc_self_other_excluder_simples_social)
+anova(sc_self_other_excluder_simples_social)
+
+#x1status
+##within social high and low are rated differently
+
+sc_self_other_excluder_simples_task <- lm(sc_self_other ~  (x1status + x2status) * d2_x3context_t, data = qualtricsMCQ)
+summary(sc_self_other_excluder_simples_task)
+anova(sc_self_other_excluder_simples_task)
+ 
+
+#test individual slopes - within intersections of power and context levels
+
+#high status - social (dotted line in RH panel)
+# sc_self_other_excluder_simples_highsoc <- lm(sc_self_other ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_s, data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_highsoc)
+# anova(sc_self_other_excluder_simples_highsoc)
+# 
+# 
+# 
+# #high status - task (solid line in RH panel)
+# sc_self_other_excluder_simples_hightask <- lm(sc_self_other ~  (d2_x1statushi + d2_x2statushi) * d2_x3context_t, data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_hightask)
+# anova(sc_self_other_excluder_simples_hightask)
+# 
+# 
+# #low status - social (dotted line in LH panel)
+# sc_self_other_excluder_simples_lowsoc <- lm(sc_self_other ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_lowsoc)
+# anova(sc_self_other_excluder_simples_lowsoc)
+#  
+# 
+# #low status - task (solid line in LH panel)
+# sc_self_other_excluder_simples_lowtask <- lm(sc_self_other ~  (d2_x1statuslo + d2_x2statuslo) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_lowtask)
+# anova(sc_self_other_excluder_simples_lowtask)
+#  
+# 
+# #control status - social (dotted line in centre panel)
+# sc_self_other_excluder_simples_consoc <- lm(sc_self_other ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_s , data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_consoc)
+# anova(sc_self_other_excluder_simples_consoc)
+#  
+# 
+# 
+# #control status - task (solid line in centre panel)
+# sc_self_other_excluder_simples_contask <- lm(sc_self_other ~  (d2_x1statuscon + d2_x2statuscon) * d2_x3context_t , data = qualtricsMCQ)
+# summary(sc_self_other_excluder_simples_contask)
+# anova(sc_self_other_excluder_simples_contask)
+```
+
+#not converging lmer scale
 ```{r}
 
 #scale predictor - mean centred, 
@@ -3407,7 +3813,10 @@ new_excluder_all.df <- merge(qualtricsMCQ, prop_exc, by = "prolific_id")
 
 
 
-
+#iden
+sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
+summary(sc_iden.lmer)
+anova(sc_iden.lmer)
 
 #scaling iden
 sc_iden.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(sc_iden_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
@@ -3417,12 +3826,9 @@ sc_iden.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3
 
 
 
-#iden
-sc_iden.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_iden_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
-summary(sc_iden.lmer)
-anova(sc_iden.lmer)
+
 #  sc own need excluder
-sc_self_other.lmer <- lmer(prop ~ xtime * (x1status + x2status) * x3context + sc_self_other_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+sc_self_other.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + sc_self_other_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(sc_self_other.lmer)
 anova(sc_self_other.lmer)
 
@@ -3452,7 +3858,7 @@ sc_norm.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3
 
 
 # rel_tension
-rel_tension.lmer <- glmer(prop ~ xtime * (x1status + x2status) * x3context + rel_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+rel_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + rel_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
 summary(rel_tension.lmer)
 anova(rel_tension.lmer)
 
@@ -3463,19 +3869,104 @@ rel_tension.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scal
 
 
 
+rel_tension.lmer <- lm(prop ~ xtime + rel_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
+
+```
+
+#ANOVA POSTPROP SCALE
+#
+```{r}
+
+#new data set with prop_pre and prop_post
+pre_new_excluder_all.df <- new_excluder_all.df %>% filter(xtime == -1)  %>% dplyr::rename(prop_pre = prop)
+
+post_new_excluder_all.df <- new_excluder_all.df %>% filter(xtime == 1) %>% dplyr::rename(prop_post = prop)
+
+prop_post_only.df <- post_new_excluder_all.df %>% select(prop_post)
+
+new_excluder_all_wide.df <- cbind(pre_new_excluder_all.df, prop_post_only.df)
 
 
-# task_tension
-task_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context + task_tension_md + (xtime | prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=2e5)))
-summary(task_tension.lmer)
-anova(task_tension.lmer)
+#anova
 
+rel_tension_wide.lm <- lm(prop_post ~ rel_tension_md + prop_pre, data = new_excluder_all_wide.df)
+summary(rel_tension_wide.lm)
+anova(rel_tension_wide.lm)
+
+task_tension_wide.lm <- lm(prop_post ~ task_tension_md + prop_pre, data = new_excluder_all_wide.df)
+summary(task_tension_wide.lm)
+anova(task_tension_wide.lm)
+
+sc_norm_wide.lm <- lm(prop_post ~ sc_norm_md + prop_pre, data = new_excluder_all_wide.df)
+summary(sc_norm_wide.lm)
+anova(sc_norm_wide.lm)
+
+sc_iden_wide.lm <- lm(prop_post ~ sc_iden_md + prop_pre, data = new_excluder_all_wide.df)
+summary(sc_iden_wide.lm)
+anova(sc_iden_wide.lm)
+
+sc_self_other_wide.lm <- lm(prop_post ~ sc_self_other_md + prop_pre, data = new_excluder_all_wide.df)
+summary(sc_self_other_wide.lm)
+anova(sc_self_other_wide.lm)
+
+
+
+
+#write out
+apa.aov.table(sc_iden_wide.lm, filename = "sc_iden_wide.doc", table.number = 1)
+apa.aov.table(sc_self_other_wide.lm, filename = "sc_self_other_wide.doc", table.number = 1)
+apa.aov.table(sc_norm_wide.lm, filename = "sc_norm_wide.doc", table.number = 1)
+apa.aov.table(rel_tension_wide.lm, filename = "rel_tension_wide.doc", table.number = 1)
+apa.aov.table(task_tension_wide.lm, filename = "task_tension_wide.doc", table.number = 1)
+```
+
+
+#prepost prop anova for victim
+```{r}
+#need prop and xtime
+prop_vic <- victim_all.df %>% select(prolific_id, prop, time)
+
+#combining prop and xtime with MCQ
+new_victim_all.df <- merge(qualtricsMCQ, prop_vic, by = "prolific_id")
+
+pre_new_victim_all.df <- new_victim_all.df %>% filter(time == "pre")  %>% dplyr::rename(prop_pre = prop)
+
+post_new_victim_all.df <- new_victim_all.df %>% filter(time == "post") %>% dplyr::rename(prop_post = prop)
+
+prop_post_only.df <- post_new_victim_all.df %>% select(prop_post)
+
+new_victim_all.df <- cbind(pre_new_victim_all.df, prop_post_only.df)
+
+
+#anova
+
+# v_rel_tension.lm <- lm(prop_post ~ rel_tension_md + prop_pre, data = new_victim_all.df)
+# summary(v_rel_tension.lm)
+# anova(v_rel_tension.lm)
+# 
+# v_task_tension.lm <- lm(prop_post ~ task_tension_md + prop_pre, data = new_victim_all.df)
+# summary(v_task_tension.lm)
+# anova(v_task_tension.lm)
+
+v_sc_norm.lm <- lm(prop_post ~ sc_norm_md + prop_pre, data = new_victim_all.df)
+summary(v_sc_norm.lm)
+anova(v_sc_norm.lm)
+
+v_sc_iden.lm <- lm(prop_post ~ sc_iden_md + prop_pre, data = new_victim_all.df)
+summary(v_sc_iden.lm)
+anova(v_sc_iden.lm)
+
+v_sc_self_other.lm <- lm(prop_post ~ sc_self_other_md + prop_pre, data = new_victim_all.df)
+summary(v_sc_self_other.lm)
+anova(v_sc_self_other.lm)
+
+```
+
+#attempts w convergence cont.
+```{r}
 #scaling task
 task_tension.lmer <- lmer(prop ~ scale(xtime) * scale(x1status + x2status) * scale(x3context) + scale(task_tension_md) + (scale(xtime )| prolific_id), data = new_excluder_all.df, control = lmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=5e5)))
 ######still NOT converging
-
-
-
 #POMS
 #make sc range from 0 to max, divide scores by max value 
 (obs-min)/ (max-min)
@@ -3499,23 +3990,23 @@ POMS_rel_tension.lmer <- lmer(prop ~ xtime *  (x1status + x2status) * x3context 
 ```
 
 
-#mixed tables MCQ
+#delete mixed tables MCQ
 ```{r}
+# 
+# tab_model(sc_iden.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_iden_lm.html")
+# 
+# 
+# 
+# tab_model(sc_norm.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_norm_lm.html")     
+# 
+# 
+# tab_model(sc_self_other.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_self_other_lm.html")     
+# 
+# tab_model(rel_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "rel_tension_lm.html")     
+# 
+# tab_model(task_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "task_tension_lm.html")     
 
-tab_model(sc_iden.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_iden_lm.html")
 
-
-
-tab_model(sc_norm.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_norm_lm.html")     
-
-
-tab_model(sc_self_other.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "sc_self_other_lm.html")     
-
-tab_model(rel_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "rel_tension_lm.html")     
-
-tab_model(task_tension.lmer, show.re.var = FALSE, show.se = TRUE, show.r2 = FALSE, show.ci = 0.95, string.ci = "95% CI", p.val = "satterthwaite", collapse.se = TRUE, string.est = "Estimate (SE)"  , file = "task_tension_lm.html")     
-
-task_tension
 ```
 
 #scatterplot
