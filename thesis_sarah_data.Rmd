@@ -3132,6 +3132,13 @@ sd(excluder_all.df$prop)
 ```{r}
 
 
+
+#add means sd column for error bars
+excluder_all.df <- excluder_all.df %>%
+  group_by(status, context) %>% mutate(mean = as.numeric(as.character(mean(prop))),
+                     sd = as.numeric(as.character(sd(prop))))
+
+
 # New facet label names for dose variable
 cap_name.labs <- c("High", "Control", "Low")
 names(cap_name.labs) <- c("high", "control", "low")
@@ -3140,23 +3147,19 @@ names(cap_name.labs) <- c("high", "control", "low")
 cap_name_context.labs <- c("Task", "Social")
 names(cap_name_context.labs) <- c("task", "social") 
 
-#add means sd column for error bars
-excluder_all_plot.df <- excluder_all.df %>%
-  group_by(status, context) %>% mutate(mean = as.numeric(as.character(mean(prop))),
-                     sd = as.numeric(as.character(sd(prop))))
+### I tried to switch to proportions by using gcol but was weird and said they were throwing all the time to exc across all conditions 
 
 
-### I tried to swtich to proportions by using gcol but was weird and said they were throwing all the time to exc across all conditions 
-
-excluder.plot <-excluder_all.df %>%
+excluder_all.df %>%
   mutate(status = fct_relevel(status, 
             "high", "control", "low")) %>%
   mutate(time = fct_relevel(time, 
             "pre", "post")) %>%
         ggplot(aes(x=time, y=prop, fill = time)) + facet_grid(~context + ~status, labeller = labeller(status = cap_name.labs, context = cap_name_context.labs)) +
     geom_bar(stat="identity") +
+    geom_errorbar(mapping=aes(prop, ymin = prop-sd, ymax = prop+sd),width=0.1,size=0.3)+
     geom_line(size=0.8)  +
-  scale_fill_manual(values = c("Light Grey", "Dark Grey")) + geom_errorbar(mapping=aes(prop, ymin = prop-sd, ymax = prop+sd),width=0.1,size=0.3)+
+  scale_fill_manual(values = c("Light Grey", "Dark Grey")) + 
   theme_bw()+
    theme(panel.grid.major=element_blank(),
         panel.grid.minor=element_blank(),        
@@ -3172,58 +3175,50 @@ excluder.plot <-excluder_all.df %>%
    labs(title = "Excluder", y = "Percentage of Ball Tosses") +
   labs(fill = "Time")+ 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 34)) 
-excluder.plot
-
-
- geom_errorbar(
-    aes(ymin = mean-sd, ymax = mean+sd), data = df.summary, 
-    width = 0.2, position = position_dodge(0.8))+
-
-excluder.plot <-excluder_all.df %>% 
-        ggplot(aes(x=time, y=prop, fill = time), position = "dodge")
-excluder.plot
-
-
-                                                                              excluder_all.df$mean <- excluder_all.df %>%
-  group_by(status, context) %>%
-  summarise(mean = mean(prop) )                                                               
-
-
-merge(df.summary, excluder_all.df, by = status)                                                                              
-                                                                              excluder_all.df$sd <- sd(prop)                                                                                                                                                                                                                                                        
-                                                                                                                                          
-df.summary <- excluder_all.df %>%
-  group_by(status, context) %>%
-  summarise(
-    sd = sd(prop, na.rm = TRUE),
-    
-    
-    
-  
-
-
-f <- ggplot(
-  df.summary, 
-  aes(x = , y = prop, ymin = prop-sd, ymax = prop+sd)
-  )
-
-
-+geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4,size=1.3)
  
 
-ggsave("excluder.plot.png")
 
 
-victim.plot <- victim_all.df %>%
-  mutate(status = fct_relevel(status, 
-            "high", "control", "low")) %>%
-  mutate(time = fct_relevel(time, 
-            "pre", "post")) %>%
+
+#add means sd column for error bars
+victim_all.df <- victim_all.df %>% group_by(status, context) %>% mutate(sd = as.numeric(as.numeric(sd(prop))))
+
+   
+
+
+
+victim_all.df %>%
+  group_by(context, status, time, prop) %>% 
+  summarise(mean_prop = mean(prop),
+            sd_prop = sd(prop)) %>%
+   ggplot(aes(x=time, y=prop, fill = time)) + facet_grid(~context + ~status, labeller = labeller(status = cap_name.labs, context = cap_name_context.labs)) +
+    geom_col() +
+  geom_errorbar(mapping=aes(prop, ymin = mean_prop-sd_prop, ymax = mean_prop+sd_prop), width = .9)+
+  scale_fill_manual(values = c("Light Grey", "Dark Grey")) + 
+  theme_bw()+
+   theme(panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),        
+        axis.text.y=element_text(size = 12),
+       legend.title=element_text(size = 10),
+        panel.border=element_blank(),
+        text=element_text(family='Times New Roman'),
+       axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line=element_line(),
+       strip.background = element_blank(),
+        axis.title.x = element_blank()) +
+   labs(title = "Victim", y = "Percentage of Ball Tosses") +
+  labs(fill = "Time")
+
+victim_plot_social 
+
+ victim_plot_social %>%
         ggplot(aes(x=time, y=prop,
-           fill = time), position = "dodge") + facet_grid(~context + ~status ) +
-    geom_bar(stat="identity") +
+           fill = time)) + facet_grid(~status) +
+    geom_col() +
+   geom_errorbar(mapping=aes(prop, ymin = mean-sd, ymax = mean+sd)) +
     geom_line(size=0.8) + 
-  apatheme +  scale_fill_manual(values = c("Light Grey","Dark Grey")) 
+scale_fill_manual(values = c("Light Grey","Dark Grey")) 
 
 
 
